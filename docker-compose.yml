@@ -1,0 +1,10 @@
+name: startsida
+
+services:
+    server:
+        image: playlogo/startsida
+        build: .
+        volumes:
+            - ./data:/app/data
+        ports:
+            - "8000:8000"
