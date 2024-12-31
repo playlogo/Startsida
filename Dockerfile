@@ -2,7 +2,10 @@
 FROM oven/bun:1.1-alpine AS build
 WORKDIR /app
 
+RUN apk add --no-cache git
+
 COPY frontend/ ./
+COPY .git .
 
 RUN bun install 
 RUN bun run build
