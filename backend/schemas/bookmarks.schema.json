@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "patternProperties": {
+        "^[^$]*$": {
+            "type": "array",
+            "description": "A bookmarks group",
+            "items": {
+                "oneOf": [
+                    {
+                        "type": "string",
+                        "pattern": "^[^|]+\\|[^|]+$",
+                        "description": "Name and URL separated using a '|'. Example: Name|URL"
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^[^|]+$",
+                        "description": "Name will be automatically generated"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Name for bookmark"
+                            },
+                            "url": {
+                                "type": "string",
+                                "description": "Target URL of the bookmark"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "url"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "properties": {
+        "version": {
+            "type": "number",
+            "description": "Config Schema version"
+        }
+    },
+    "required": [
+        "version"
+    ],
+    "additionalProperties": true
+}

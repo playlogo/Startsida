@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "patternProperties": {
+        "^[^$]*$": {
+            "type": "object",
+            "description": "A device with Wake-on-Lan enabled",
+            "properties": {
+                "icon": {
+                    "type": "string",
+                    "description": "A icon for the device, must be from https://icones.js.org/"
+                },
+                "mac": {
+                    "type": "string",
+                    "description": "Mac address of the device, example: AA:BB:CC:DD:EE:FF"
+                }
+            }
+        }
+    },
+    "properties": {
+        "version": {
+            "type": "number",
+            "description": "Config Schema version"
+        }
+    },
+    "required": [
+        "version"
+    ]
+}

@@ -1,0 +1,4 @@
+{
+    "$schema": "../schemas/bookmarks.schema.json",
+    "version": 1
+}

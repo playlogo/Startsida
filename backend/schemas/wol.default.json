@@ -1,0 +1,4 @@
+{
+    "$schema": "../schemas/wol.schema.json",
+    "version": 1
+}
