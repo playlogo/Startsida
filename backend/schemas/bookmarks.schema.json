@@ -13,11 +13,6 @@
                         "description": "Name and URL separated using a '|'. Example: Name|URL"
                     },
                     {
-                        "type": "string",
-                        "pattern": "^[^|]+$",
-                        "description": "Name will be automatically generated"
-                    },
-                    {
                         "type": "object",
                         "properties": {
                             "name": {

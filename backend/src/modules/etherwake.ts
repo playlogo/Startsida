@@ -1,6 +1,9 @@
+import { Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
+
 import { Entry } from "../common.ts";
-import Module from "./_module.ts";
 import { loadConfig } from "../utils.ts";
+
+import Module from "./_module.ts";
 
 class Device {
 	name: string;
@@ -43,7 +46,7 @@ class WakeOnLanManager extends Module {
 
 	override async collect() {
 		// Load config
-		this.config = await loadConfig("bookmarks", this.configSchemaVersion);
+		this.config = await loadConfig("wol", this.configSchemaVersion);
 
 		// Parse config
 		this.parseConfig();
@@ -72,7 +75,35 @@ class WakeOnLanManager extends Module {
 		return res;
 	}
 
-	override buildRouter(): void {}
+	override buildRouter(): void {
+		this.okaRouter = new Router({ prefix: "/wol" });
+
+		this.router.get("/:mac/wake", async (ctx) => {
+			const mac = ctx.params.mac.replaceAll("_", ":");
+
+			try {
+				const command = new Deno.Command("/usr/bin/wakeonlan", {
+					args: [mac],
+				});
+
+				const output = await command.output();
+
+				if (output.code !== 0) {
+					console.error(new TextDecoder().decode(output.stdout));
+					console.error(new TextDecoder().decode(output.stderr));
+
+					throw new Error(`Failed to wake device ${mac}`);
+				} else {
+					ctx.response.body = "OK";
+				}
+			} catch (err) {
+				ctx.response.body = "ERROR";
+				ctx.response.status = 400;
+
+				console.error(err);
+			}
+		});
+	}
 }
 
 export default new WakeOnLanManager();

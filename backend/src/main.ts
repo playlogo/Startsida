@@ -25,7 +25,8 @@ try {
 }
 
 // API
-import { Application, send } from "https://deno.land/x/oak@v17.1.3/mod.ts";
+import { Application, send, Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
+import etherwake from "./modules/etherwake.ts";
 
 const app = new Application();
 
@@ -47,6 +48,20 @@ app.use(bookmarksManager.router.allowedMethods());
 
 app.use(wakeOnLanManager.router.routes());
 app.use(wakeOnLanManager.router.allowedMethods());
+
+// API
+const router = new Router();
+router.get("/entries", (ctx) => {
+	const res = [];
+
+	res.push(...bookmarksManager.entries());
+	res.push(...etherwake.entries());
+
+	ctx.response.body = res;
+});
+
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 // Start api
 app.addEventListener("listen", ({ hostname, port, secure }) => {
