@@ -13,7 +13,9 @@ if (import.meta.env.DEV) {
 }
 
 // Load app
-const App = (await import("./App.svelte")).default;
+//const App = (await import("./App.svelte")).default;
+import App from "./App.svelte";
+
 import { mount } from "svelte";
 
 const app = mount(App, {

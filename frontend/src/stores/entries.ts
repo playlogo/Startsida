@@ -6,20 +6,23 @@ function buildStore() {
 	const { subscribe, set, update } = writable<{
 		entries: Entry[];
 		isLoading: boolean;
-	}>({
-		entries: [],
-		isLoading: true,
-	});
-
-	// Start loading
-	fetch(`${window.api}/entries`)
-		.then((res) => res.json())
-		.then((entries) => {
-			set({
-				entries: entries,
-				isLoading: false,
-			});
-		});
+	}>(
+		{
+			entries: [],
+			isLoading: true,
+		},
+		function start() {
+			// Start loading
+			fetch(`${window.api}/entries`)
+				.then((res) => res.json())
+				.then((entries) => {
+					set({
+						entries: entries,
+						isLoading: false,
+					});
+				});
+		}
+	);
 
 	const store = {
 		subscribe,
