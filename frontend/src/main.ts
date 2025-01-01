@@ -6,8 +6,11 @@ declare global {
 		api: string;
 	}
 }
-
-window.api = "http://192.168.178.61:8000";
+if (import.meta.env.DEV) {
+	window.api = "http://192.168.178.61:8000";
+} else {
+	window.api = "";
+}
 
 // Load app
 const App = (await import("./App.svelte")).default;
