@@ -1,3 +1,4 @@
 .env
 data/
-backend/cache/
+backend/cache/**/*
+!backend/cache/cache

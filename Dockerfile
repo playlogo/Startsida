@@ -18,6 +18,7 @@ EXPOSE 8000
 WORKDIR /app
 
 
+
 # Copy source
 COPY --from=build /app/dist ./dist
 
