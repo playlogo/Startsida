@@ -92,7 +92,7 @@ class Group {
 		const res = [];
 
 		for (const entry of this.entries) {
-			res.push(entry.common());
+			res.push(entry.common(this.name));
 		}
 
 		return res;
@@ -134,7 +134,7 @@ class Bookmark {
 		this.hash = encodeHex(hashBuffer);
 	}
 
-	common(): Entry {
+	common(group: string): Entry {
 		return {
 			id: this.hash!,
 
@@ -148,6 +148,8 @@ class Bookmark {
 				type: "href",
 				url: this.url,
 			},
+
+			group: group,
 			module: "Bookmarks",
 		};
 	}

@@ -26,6 +26,8 @@ try {
 
 // API
 import { Application, send, Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
+
 import etherwake from "./modules/etherwake.ts";
 
 const app = new Application();
@@ -43,6 +45,8 @@ app.use(async (ctx, next) => {
 });
 
 // Routes
+app.use(oakCors());
+
 app.use(bookmarksManager.router.routes());
 app.use(bookmarksManager.router.allowedMethods());
 
@@ -64,6 +68,7 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 // Start api
+
 app.addEventListener("listen", ({ hostname, port, secure }) => {
 	console.log(`[api] Listening on: ${secure ? "https://" : "http://"}${hostname ?? "localhost"}:${port}`);
 });

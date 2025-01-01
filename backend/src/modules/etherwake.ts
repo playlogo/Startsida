@@ -20,7 +20,7 @@ class Device {
 		this.id = crypto.randomUUID();
 	}
 
-	common(): Entry {
+	common(group: string): Entry {
 		return {
 			id: this.id,
 			name: name,
@@ -34,15 +34,36 @@ class Device {
 				endpoint: `/wol/${this.mac.replaceAll(":", "_")}/wake`,
 			},
 			module: "WakeOnLan",
+
+			group: group,
 		};
+	}
+}
+
+class Group {
+	name: string;
+	entries: Device[] = [];
+
+	constructor(name: string) {
+		this.name = name;
+	}
+
+	common() {
+		const res = [];
+
+		for (const entry of this.entries) {
+			res.push(entry.common(this.name));
+		}
+
+		return res;
 	}
 }
 
 class WakeOnLanManager extends Module {
 	configSchemaVersion = 1;
-	config: { [key: string]: { icon: string; mac: string } } = {};
+	config: { [key: string]: { [key: string]: { icon: string; mac: string } } } = {};
 
-	devices: Device[] = [];
+	groups: Group[] = [];
 
 	override async collect() {
 		// Load config
@@ -58,18 +79,24 @@ class WakeOnLanManager extends Module {
 				continue;
 			}
 
-			const device = new Device(key, value.icon, value.mac);
-			this.devices.push(device);
+			const group = new Group(key);
 
-			console.log(`[wol] Added device: ${device.name}`);
+			for (const [deviceName, deviceConfig] of Object.entries(value)) {
+				const device = new Device(deviceName, deviceConfig.icon, deviceConfig.mac);
+				group.entries.push(device);
+
+				console.log(`[wol] Added device: ${device.name}`);
+			}
+
+			this.groups.push(group);
 		}
 	}
 
 	override entries(): Entry[] {
 		const res = [];
 
-		for (const device of this.devices) {
-			res.push(device.common());
+		for (const group of this.groups) {
+			res.push(...group.common());
 		}
 
 		return res;

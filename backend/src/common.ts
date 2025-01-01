@@ -25,6 +25,8 @@ export interface Entry {
 	name: string;
 	icon: ImageIcon | IconIcon;
 
+	group: string;
+
 	click: HrefClick | APIClick;
 	module: string;
 }

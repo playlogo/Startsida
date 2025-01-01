@@ -18,7 +18,33 @@ export async function gatherIconURL(reqUrl: string, name: string) {
 		return "https://wikimedia.org/static/images/project-logos/enwiki.png";
 	}
 
-	// Try apple touch icon
+	// Try apple touch icon absolute path
+	try {
+		let appleTouchIcon = `${doc.querySelector("link[rel='apple-touch-icon']")!.getAttribute("href")}`;
+
+		const url = new URL(resUrl);
+
+		if (appleTouchIcon.startsWith("/")) {
+			appleTouchIcon = `${url.protocol}//${url.hostname}:${url.port}${appleTouchIcon}`;
+		} else {
+			appleTouchIcon = `${url.protocol}//${url.hostname}:${url.port}/${appleTouchIcon}`;
+		}
+
+		// Test it
+		const res = await fetch(appleTouchIcon, { signal: AbortSignal.timeout(TIMEOUT) });
+
+		if (res.status !== 200) {
+			throw new Error("Invalid status code");
+		}
+
+		console.log(`[bookmarks] [icon] Found icon for '${name}' using apple-touch-icon : ${appleTouchIcon}`);
+
+		return appleTouchIcon;
+	} catch (_err) {
+		// Empty
+	}
+
+	// Try apple touch icon relative path
 	try {
 		let appleTouchIcon = `${doc.querySelector("link[rel='apple-touch-icon']")!.getAttribute("href")}`;
 
