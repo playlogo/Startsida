@@ -1,9 +1,11 @@
+/*
+	Add devices to wake via Wake-On-Lan
+*/
+
 import { Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
 
-import { Entry } from "../common.ts";
-import { loadConfig } from "../utils.ts";
-
-import Module from "./_module.ts";
+import { Entry, Module } from "local/src/common.ts";
+import { loadConfig } from "local/src/utils.ts";
 
 class Device {
 	name: string;
@@ -23,9 +25,9 @@ class Device {
 	common(group: string): Entry {
 		return {
 			id: this.id,
-			name: name,
+			name: this.name,
 			icon: {
-				type: "icon",
+				type: "iconFull",
 				icon: this.icon,
 				background: "blue",
 			},
@@ -66,6 +68,8 @@ class WakeOnLanManager extends Module {
 	groups: Group[] = [];
 
 	override async collect() {
+		// TODO- check if /usr/bin/wakeonlan exists
+
 		// Load config
 		this.config = await loadConfig("wol", this.configSchemaVersion);
 
@@ -80,12 +84,9 @@ class WakeOnLanManager extends Module {
 			}
 
 			const group = new Group(key);
-
 			for (const [deviceName, deviceConfig] of Object.entries(value)) {
 				const device = new Device(deviceName, deviceConfig.icon, deviceConfig.mac);
 				group.entries.push(device);
-
-				console.log(`[wol] Added device: ${device.name}`);
 			}
 
 			this.groups.push(group);
@@ -108,6 +109,8 @@ class WakeOnLanManager extends Module {
 		this.router.get("/:mac/wake", async (ctx) => {
 			const mac = ctx.params.mac.replaceAll("_", ":");
 
+			console.log(`[wol] Waking device ${mac}`);
+
 			try {
 				const command = new Deno.Command("/usr/bin/wakeonlan", {
 					args: [mac],
@@ -116,11 +119,13 @@ class WakeOnLanManager extends Module {
 				const output = await command.output();
 
 				if (output.code !== 0) {
-					console.error(new TextDecoder().decode(output.stdout));
-					console.error(new TextDecoder().decode(output.stderr));
+					console.error("[wol]" + new TextDecoder().decode(output.stdout));
+					console.error("[wol]" + new TextDecoder().decode(output.stderr));
 
 					throw new Error(`Failed to wake device ${mac}`);
 				} else {
+					console.log(`[wol] Woke device ${mac}`);
+
 					ctx.response.body = "OK";
 				}
 			} catch (err) {
@@ -133,4 +138,6 @@ class WakeOnLanManager extends Module {
 	}
 }
 
-export default new WakeOnLanManager();
+const wakeOnLanManager = new WakeOnLanManager();
+
+export default wakeOnLanManager;

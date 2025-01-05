@@ -51,3 +51,13 @@ export async function loadConfig(name: string, configVersion: number) {
 
 	return {};
 }
+
+import { encodeHex } from "jsr:@std/encoding/hex";
+
+export async function hash(content: string) {
+	// From: https://docs.deno.com/examples/hashing/
+	const messageBuffer = new TextEncoder().encode(content);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", messageBuffer);
+
+	return encodeHex(hashBuffer);
+}

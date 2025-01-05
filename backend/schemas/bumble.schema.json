@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "patternProperties": {
+        "^[^$]*$": {
+            "type": "array",
+            "description": "A group of scenes to dislay",
+            "items": {
+                "type": "string",
+                "description": "Name of a scene, or * to include all"
+            }
+        }
+    },
+    "properties": {
+        "version": {
+            "type": "number",
+            "description": "Config Schema version"
+        },
+        "url": {
+            "type": "string",
+            "description": "BumbleCore url, no trailing /"
+        }
+    },
+    "required": [
+        "version",
+        "url"
+    ]
+}

@@ -14,8 +14,7 @@ export async function gatherIconURL(reqUrl: string, name: string) {
 		const page = await res.text();
 		doc = new DOMParser().parseFromString(page, "text/html");
 	} catch (_err) {
-		console.error(`[bookmarks] [icon] Unable to fetch '${name}' '${reqUrl}'`);
-		return "https://wikimedia.org/static/images/project-logos/enwiki.png";
+		throw new Deno.errors.NotFound(`[bookmarks] [icon] Unable to fetch '${name}' '${reqUrl}'`);
 	}
 
 	// Try apple touch icon absolute path
@@ -120,6 +119,5 @@ export async function gatherIconURL(reqUrl: string, name: string) {
 		// Empty
 	}
 
-	console.error(`[bookmarks] [icon] Unable to find icon for '${name}' '${reqUrl}'`);
-	return "https://wikimedia.org/static/images/project-logos/enwiki.png";
+	throw new Deno.errors.NotFound(`[bookmarks] [icon] Unable to find icon for '${name}' '${reqUrl}'`);
 }

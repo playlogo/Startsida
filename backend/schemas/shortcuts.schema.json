@@ -4,24 +4,24 @@
     "patternProperties": {
         "^[^$]*$": {
             "type": "object",
-            "description": "A group of devices",
+            "description": "A group of shortcuts",
             "patternProperties": {
                 "^[^$]*$": {
                     "type": "object",
-                    "description": "A device with Wake-on-Lan enabled",
+                    "description": "A shortcut",
                     "properties": {
                         "icon": {
                             "type": "string",
-                            "description": "A icon for the device, must be from https://icones.js.org/"
+                            "description": "A icon for the shortcut, must be from https://icones.js.org/"
                         },
-                        "mac": {
+                        "cmd": {
                             "type": "string",
-                            "description": "Mac address of the device, example: AA:BB:CC:DD:EE:FF"
+                            "description": "Command to run when shortcut is tiggered"
                         }
                     },
                     "required": [
                         "icon",
-                        "mac"
+                        "cmd"
                     ],
                     "additionalProperties": false
                 }

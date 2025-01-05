@@ -22,6 +22,10 @@
                             "url": {
                                 "type": "string",
                                 "description": "Target URL of the bookmark"
+                            },
+                            "icon": {
+                                "type": "string",
+                                "description": "Icon for bookmark"
                             }
                         },
                         "required": [
