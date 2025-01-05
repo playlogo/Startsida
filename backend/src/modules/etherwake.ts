@@ -7,65 +7,20 @@ import { Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
 import { Entry, Module } from "local/src/common.ts";
 import { loadConfig } from "local/src/utils.ts";
 
-class Device {
-	name: string;
-	icon: string;
-	mac: string;
-
-	id: string; // For internal tracking
-
-	constructor(name: string, icon: string, mac: string) {
-		this.name = name;
-		this.icon = icon;
-		this.mac = mac;
-
-		this.id = crypto.randomUUID();
-	}
-
-	common(group: string): Entry {
-		return {
-			id: this.id,
-			name: this.name,
-			icon: {
-				type: "iconFull",
-				icon: this.icon,
-				background: "blue",
-			},
-			click: {
-				type: "api",
-				endpoint: `/wol/${this.mac.replaceAll(":", "_")}/wake`,
-			},
-			module: "WakeOnLan",
-
-			group: group,
-		};
-	}
-}
-
-class Group {
-	name: string;
-	entries: Device[] = [];
-
-	constructor(name: string) {
-		this.name = name;
-	}
-
-	common() {
-		const res = [];
-
-		for (const entry of this.entries) {
-			res.push(entry.common(this.name));
-		}
-
-		return res;
-	}
-}
-
 class WakeOnLanManager extends Module {
 	configSchemaVersion = 1;
 	config: { [key: string]: { [key: string]: { icon: string; mac: string } } } = {};
 
 	groups: Group[] = [];
+
+	override icon = {
+		name: "WakeOnLan",
+		icon: "icon-park-outline:ethernet-on",
+		colors: {
+			background: "white",
+			icon: "black",
+		},
+	};
 
 	override async collect() {
 		// TODO- check if /usr/bin/wakeonlan exists
@@ -141,3 +96,60 @@ class WakeOnLanManager extends Module {
 const wakeOnLanManager = new WakeOnLanManager();
 
 export default wakeOnLanManager;
+
+class Device {
+	name: string;
+	icon: string;
+	mac: string;
+
+	id: string; // For internal tracking
+
+	constructor(name: string, icon: string, mac: string) {
+		this.name = name;
+		this.icon = icon;
+		this.mac = mac;
+
+		this.id = crypto.randomUUID();
+	}
+
+	common(group: string): Entry {
+		return {
+			id: this.id,
+			name: this.name,
+			icon: {
+				type: "iconFull",
+				icon: this.icon,
+				colors: {
+					background: "blue",
+					icon: "black",
+				},
+			},
+			click: {
+				type: "api",
+				endpoint: `/wol/${this.mac.replaceAll(":", "_")}/wake`,
+			},
+			module: "WakeOnLan",
+
+			group: group,
+		};
+	}
+}
+
+class Group {
+	name: string;
+	entries: Device[] = [];
+
+	constructor(name: string) {
+		this.name = name;
+	}
+
+	common() {
+		const res = [];
+
+		for (const entry of this.entries) {
+			res.push(entry.common(this.name));
+		}
+
+		return res;
+	}
+}

@@ -7,66 +7,21 @@ import { Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
 import { Entry, Module } from "local/src/common.ts";
 import { loadConfig } from "local/src/utils.ts";
 
-class Shortcut {
-	name: string;
-	icon: string;
-	cmd: string;
-
-	id: string; // For internal tracking
-
-	constructor(name: string, icon: string, cmd: string) {
-		this.name = name;
-		this.icon = icon;
-		this.cmd = cmd;
-
-		this.id = crypto.randomUUID();
-	}
-
-	common(group: string): Entry {
-		return {
-			id: this.id,
-			name: this.name,
-			icon: {
-				type: "iconFull",
-				icon: this.icon,
-				background: "white",
-			},
-			click: {
-				type: "api",
-				endpoint: `/shortcuts/${this.id}/run`,
-			},
-			module: "Shortcuts",
-
-			group: group,
-		};
-	}
-}
-
-class Group {
-	name: string;
-	entries: Shortcut[] = [];
-
-	constructor(name: string) {
-		this.name = name;
-	}
-
-	common() {
-		const res = [];
-
-		for (const entry of this.entries) {
-			res.push(entry.common(this.name));
-		}
-
-		return res;
-	}
-}
-
 class ShortcutsManager extends Module {
 	configSchemaVersion = 1;
-	config: { [key: string]: { [key: string]: { cmd: string; mac: string } } } = {};
+	config: { [key: string]: { [key: string]: { icon: string; cmd: string } } } = {};
 
 	groups: Group[] = [];
 	shortcuts: { [key: string]: Shortcut } = {};
+
+	override icon = {
+		name: "Shortcuts",
+		icon: "iconoir:apple-shortcuts",
+		colors: {
+			background: "#1c1e59",
+			icon: "#f6605a",
+		},
+	};
 
 	override async collect() {
 		// Load config
@@ -84,7 +39,7 @@ class ShortcutsManager extends Module {
 
 			const group = new Group(key);
 			for (const [shortcutName, shortcutConfig] of Object.entries(value)) {
-				const shortcut = new Shortcut(shortcutName, shortcutConfig.cmd, shortcutConfig.mac);
+				const shortcut = new Shortcut(shortcutName, shortcutConfig.icon, shortcutConfig.cmd);
 
 				this.shortcuts[shortcut.id] = shortcut;
 				group.entries.push(shortcut);
@@ -148,3 +103,60 @@ class ShortcutsManager extends Module {
 const shortcutsManager = new ShortcutsManager();
 
 export default shortcutsManager;
+
+class Shortcut {
+	name: string;
+	icon: string;
+	cmd: string;
+
+	id: string; // For internal tracking
+
+	constructor(name: string, icon: string, cmd: string) {
+		this.name = name;
+		this.icon = icon;
+		this.cmd = cmd;
+
+		this.id = crypto.randomUUID();
+	}
+
+	common(group: string): Entry {
+		return {
+			id: this.id,
+			name: this.name,
+			icon: {
+				type: "iconFull",
+				icon: this.icon,
+				colors: {
+					background: "white",
+					icon: "black",
+				},
+			},
+			click: {
+				type: "api",
+				endpoint: `/shortcuts/${this.id}/run`,
+			},
+			module: "Shortcuts",
+
+			group: group,
+		};
+	}
+}
+
+class Group {
+	name: string;
+	entries: Shortcut[] = [];
+
+	constructor(name: string) {
+		this.name = name;
+	}
+
+	common() {
+		const res = [];
+
+		for (const entry of this.entries) {
+			res.push(entry.common(this.name));
+		}
+
+		return res;
+	}
+}

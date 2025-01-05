@@ -7,61 +7,6 @@ import { Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
 import { Entry, Module } from "local/src/common.ts";
 import { loadConfig } from "local/src/utils.ts";
 
-class Scene {
-	name: string;
-	icon: string;
-	colors: string[];
-
-	id: string; // For internal tracking
-
-	constructor(name: string, icon: string, gradient: string[]) {
-		this.name = name;
-		this.icon = icon;
-		this.colors = gradient;
-
-		this.id = crypto.randomUUID();
-	}
-
-	common(group: string): Entry {
-		return {
-			id: this.id,
-			name: this.name,
-			icon: {
-				type: "iconGradient",
-				icon: this.icon,
-				from: this.colors[0],
-				to: this.colors[1],
-			},
-			click: {
-				type: "api",
-				endpoint: `/bumble/${this.name.replaceAll("/", "%2F")}/apply`,
-			},
-			module: "BumbleCore",
-
-			group: group,
-		};
-	}
-}
-
-class Group {
-	name: string;
-	entries: Scene[] = [];
-
-	constructor(name: string) {
-		this.name = name;
-	}
-
-	common() {
-		const res = [];
-
-		for (const entry of this.entries) {
-			res.push(entry.common(this.name));
-		}
-
-		return res;
-	}
-}
-
 class BumbleCoreManager extends Module {
 	configSchemaVersion = 1;
 	config: { [key: string]: string[] | string } = {};
@@ -71,6 +16,15 @@ class BumbleCoreManager extends Module {
 	scenes: { [key: string]: Scene } = {};
 
 	url: string = "";
+
+	override icon = {
+		name: "BumbleCore",
+		icon: "material-symbols:lightbulb-2-outline",
+		colors: {
+			background: "#1e2024",
+			icon: "white",
+		},
+	};
 
 	override async collect() {
 		// Load config
@@ -146,7 +100,7 @@ class BumbleCoreManager extends Module {
 			console.log(`[bumble] Applying scene: ${sceneName}`);
 
 			try {
-				const res = await fetch(`${this.url}/api/scenes/${sceneName.replaceAll("%2F", "/")}/load`);
+				const res = await fetch(`${this.url}/api/scenes/${sceneName.replaceAll("/", "%2F")}/load`);
 
 				if (res.ok) {
 					ctx.response.body = "OK";
@@ -167,3 +121,61 @@ class BumbleCoreManager extends Module {
 const bumbleCoreManager = new BumbleCoreManager();
 
 export default bumbleCoreManager;
+
+class Scene {
+	name: string;
+	icon: string;
+	colors: string[];
+
+	id: string; // For internal tracking
+
+	constructor(name: string, icon: string, gradient: string[]) {
+		this.name = name;
+		this.icon = icon;
+		this.colors = gradient;
+
+		this.id = crypto.randomUUID();
+	}
+
+	common(group: string): Entry {
+		return {
+			id: this.id,
+			name: this.name,
+			icon: {
+				type: "iconGradient",
+				icon: this.icon,
+				colors: {
+					primary: this.colors[0],
+					secondary: this.colors[1],
+					icon: "white",
+				},
+			},
+			click: {
+				type: "api",
+				endpoint: `/bumble/${this.name.replaceAll("/", "%2F")}/apply`,
+			},
+			module: "BumbleCore",
+
+			group: group,
+		};
+	}
+}
+
+class Group {
+	name: string;
+	entries: Scene[] = [];
+
+	constructor(name: string) {
+		this.name = name;
+	}
+
+	common() {
+		const res = [];
+
+		for (const entry of this.entries) {
+			res.push(entry.common(this.name));
+		}
+
+		return res;
+	}
+}

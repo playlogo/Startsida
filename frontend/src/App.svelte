@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from "./lib/Icon.svelte";
 
-	import entries from "./stores/entries.ts";
+	import entries from "./stores/entries";
 </script>
 
 <main>

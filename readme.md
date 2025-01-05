@@ -37,11 +37,13 @@ Frontend:
 
 - [ ] Groups!
 - [ ] Wallpapers!
-- [ ] Improve Icon component
+- [x] Improve Icon component
 
 - [ ] Mobile padding margin etc support
 - [ ] Offline caching of assets
 - [ ] Status display with git commit
+
+- [x] Module icons
 
 ## V3 Target features
 

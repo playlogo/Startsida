@@ -75,7 +75,9 @@ class BookmarksManager extends Module {
 				foundOnes.push(hash);
 			}
 
-			console.log(`[bookmarks] [gatherMissingIcons] Found ${foundOnes.length} missing icons`);
+			console.log(
+				`[bookmarks] [gatherMissingIcons] Found ${foundOnes.length} of ${notFoundIcons.length} missing icons`
+			);
 
 			// Store found ones
 			await storage.storage.set(

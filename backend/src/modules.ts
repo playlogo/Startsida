@@ -1,5 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak@v17.1.3/mod.ts";
-import { Module } from "local/src/common.ts";
+import { Entry, Module, ModuleIcon } from "local/src/common.ts";
 
 class ModuleManager {
 	modules: { [key: string]: Module } = {};
@@ -38,10 +38,17 @@ class ModuleManager {
 
 		// API
 		router.get("/entries", (ctx) => {
-			const res = [];
+			const res: { entries: Entry[]; modules: { [key: string]: ModuleIcon } } = {
+				entries: [],
+				modules: {},
+			};
 
-			for (const module of Object.values(moduleManager.modules)) {
-				res.push(...module.entries());
+			for (const [_name, module] of Object.entries(moduleManager.modules)) {
+				res.entries.push(...module.entries());
+
+				if (module.icon) {
+					res.modules[module.icon.name] = module.icon;
+				}
 			}
 
 			ctx.response.body = res;
