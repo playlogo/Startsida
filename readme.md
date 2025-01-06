@@ -15,7 +15,7 @@ Backend:
 Frontend:
 
 - [ ] Mobile friendly
-- [ ] Works offline - Use internet only to update
+- [x] Works offline - Use internet only to update - Service workers!
 - [ ] Groups:
   - [ ] Shows bookmarks with icons and text
   - [ ] Shows actions (ethernet wake, script execution) with icons
@@ -32,6 +32,7 @@ Backend - Done 05.01.2025:
 - [x] Custom icons for bookmarks
 - [x] Try to fix none loading bookmarks on later start, ~~maybe~~ schedule with Deno.cron
 - [x] Wallpapers!
+- [x] Fixes
 
 Frontend:
 

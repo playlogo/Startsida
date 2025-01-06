@@ -9,6 +9,7 @@ app.use(async (ctx, next) => {
 		await send(ctx, ctx.request.url.pathname, {
 			root: "dist/",
 			index: "index.html",
+			hidden: true,
 		});
 	} catch (_) {
 		await next();

@@ -61,13 +61,13 @@ class WakeOnLanManager extends Module {
 	override buildRouter(): void {
 		this.okaRouter = new Router({ prefix: "/wol" });
 
-		this.router.get("/:mac/wake", async (ctx) => {
+		this.router.post("/:mac/wake", async (ctx) => {
 			const mac = ctx.params.mac.replaceAll("_", ":");
 
 			console.log(`[wol] Waking device ${mac}`);
 
 			try {
-				const command = new Deno.Command("/usr/bin/wakeonlan", {
+				const command = new Deno.Command("/usr/bin/awake", {
 					args: [mac],
 				});
 
@@ -83,8 +83,8 @@ class WakeOnLanManager extends Module {
 
 					ctx.response.body = "OK";
 				}
-			} catch (err) {
-				ctx.response.body = "ERROR";
+			} catch (err: any) {
+				ctx.response.body = `ERROR: ${err.message}`;
 				ctx.response.status = 400;
 
 				console.error(err);

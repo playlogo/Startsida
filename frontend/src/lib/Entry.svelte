@@ -29,6 +29,10 @@
 		}
 
 		if (data.click.type === "api") {
+			if (loading) {
+				return;
+			}
+
 			if (statusClearTimeout !== undefined) {
 				clearTimeout(statusClearTimeout);
 			}
@@ -43,16 +47,20 @@
 			try {
 				res = await fetch(`${window.api}${data.click.endpoint}`, {
 					signal: AbortSignal.timeout(10000),
+					method: "POST",
 				});
 			} catch (err) {
 				console.error(err);
 			} finally {
 				// Minimum loading duration
-				if (Date.now() - requestStart > MIN_REQUEST_DURATION) {
+				if (Date.now() - requestStart < MIN_REQUEST_DURATION) {
 					await new Promise<void>((resolve, _reject) => {
-						setTimeout(() => {
-							resolve();
-						}, Date.now() - requestStart);
+						setTimeout(
+							() => {
+								resolve();
+							},
+							MIN_REQUEST_DURATION - (Date.now() - requestStart)
+						);
 					});
 				}
 
@@ -91,9 +99,15 @@
 		onclick={click}
 		class:dimmed={loading || status !== Status.NONE}
 		class:zoomed={loading}
+		class:cursor_blocked={loading}
 	>
 		{#if data.icon.type === "image"}
-			<img class="image" src={`${window.api}${data.icon.url}`} alt={`${data.name} logo`} />
+			<img
+				class="image"
+				src={`${window.api}${data.icon.url}`}
+				alt={`${data.name} logo`}
+				draggable="false"
+			/>
 		{:else if data.icon.type === "iconFull" || data.icon.type === "iconGradient"}
 			<Icon icon={data.icon.icon} width={32} color={data.icon.colors.icon} />
 		{/if}
@@ -226,6 +240,11 @@
 		scale: 1.1;
 	}
 
+	.cursor_blocked {
+		cursor: default;
+		pointer-events: none;
+	}
+
 	.dimmed::before {
 		background-color: rgba(0, 0, 0, 0.3) !important;
 	}
@@ -283,6 +302,9 @@
 		background-color: white;
 
 		border-radius: 22.5%;
+
+		user-select: none;
+		-webkit-user-drag: none;
 	}
 
 	/* Text */

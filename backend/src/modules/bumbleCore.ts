@@ -94,7 +94,7 @@ class BumbleCoreManager extends Module {
 	override buildRouter(): void {
 		this.okaRouter = new Router({ prefix: "/bumble" });
 
-		this.router.get("/:scene/apply", async (ctx) => {
+		this.router.post("/:scene/apply", async (ctx) => {
 			const sceneName = ctx.params.scene.replaceAll("%2F", "/");
 
 			console.log(`[bumble] Applying scene: ${sceneName}`);

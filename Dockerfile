@@ -17,7 +17,7 @@ EXPOSE 8000
 
 WORKDIR /app
 
-
+RUN apk add bash wget git curl python3 awake
 
 # Copy source
 COPY --from=build /app/dist ./dist

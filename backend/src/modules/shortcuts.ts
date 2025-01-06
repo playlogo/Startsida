@@ -62,7 +62,7 @@ class ShortcutsManager extends Module {
 	override buildRouter(): void {
 		this.okaRouter = new Router({ prefix: "/shortcuts" });
 
-		this.router.get("/:id/run", async (ctx) => {
+		this.router.post("/:id/run", async (ctx) => {
 			const id = ctx.params.id;
 			const shortcut = shortcutsManager.shortcuts[id];
 
@@ -75,16 +75,18 @@ class ShortcutsManager extends Module {
 			}
 
 			try {
-				const command = new Deno.Command("/usr/bin/bash", {
+				const command = new Deno.Command("/bin/bash", {
 					args: ["-c", shortcut.cmd],
+					stderr: "piped",
+					stdout: "piped",
 				});
 
 				const output = await command.output();
 
-				if (output.code !== 0) {
-					console.error("[shortcuts]" + new TextDecoder().decode(output.stdout));
-					console.error("[shortcuts]" + new TextDecoder().decode(output.stderr));
+				console.error(new TextDecoder().decode(output.stdout));
+				console.error(new TextDecoder().decode(output.stderr));
 
+				if (output.code !== 0) {
 					throw new Error(`Failed to run shortcut ${shortcut.name}`);
 				} else {
 					console.log(`[shortcuts] Ran shortcut ${shortcut.name}`);
