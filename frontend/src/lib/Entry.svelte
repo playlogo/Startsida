@@ -3,12 +3,14 @@
 
 	import entries from "../stores/entries";
 
-	import type { Entry } from "../types/api";
+	import type { Entry, ImageIcon } from "../types/api";
+	import { rgbToHex } from "../utils/theme-color";
 
 	let { data }: { data: Entry } = $props();
 
 	// Consts
 	const MIN_REQUEST_DURATION = 1000;
+	const FALLBACK_IMAGE_BACKGROUND_COLOR = "white";
 
 	const Status = {
 		NONE: "NONE",
@@ -16,6 +18,7 @@
 		ERROR: "ERROR",
 	};
 
+	// API action
 	let loading: boolean = $state(false);
 	let status: string = $state(Status.NONE);
 
@@ -89,13 +92,89 @@
 			}
 		}
 	}
+
+	// Background color
+	let backgroundColor = $state(FALLBACK_IMAGE_BACKGROUND_COLOR);
+
+	async function extractBackgroundColor() {
+		// Try to find color in cache
+		const url = (data.icon as ImageIcon).url;
+
+		if (localStorage.getItem("icon-transparency") !== null) {
+			const parsed = JSON.parse(localStorage.getItem("icon-transparency")!);
+			if (parsed[url] !== undefined) {
+				if (parsed[url] === "FALLBACK") {
+					return FALLBACK_IMAGE_BACKGROUND_COLOR;
+				} else {
+					return parsed[url];
+				}
+			}
+		} else {
+			localStorage.setItem("icon-transparency", JSON.stringify({}));
+		}
+
+		// Else extract it now
+		let isTransparent = false;
+		let backgroundColor = FALLBACK_IMAGE_BACKGROUND_COLOR;
+
+		const canvas = document.createElement("canvas");
+		const ctx = canvas.getContext("2d")!;
+
+		const image = document.createElement("img");
+		await new Promise<void>((resolve, _reject) => {
+			image.src = `${window.api}${url}`;
+
+			image.onload = (ele) => {
+				resolve();
+			};
+		});
+
+		const height = (canvas.height = image.naturalHeight);
+		const width = (canvas.width = image.naturalWidth);
+
+		// Draw image
+		ctx.drawImage(image, 0, 0);
+		let imageData;
+
+		try {
+			imageData = ctx.getImageData(0, 0, width, height);
+		} catch (err) {
+			console.warn(`[icon] Cannot extract background from image '${window.api}${url}' due to CORS`);
+			return FALLBACK_IMAGE_BACKGROUND_COLOR;
+		}
+
+		// Check if any pixel is transparent
+		for (var i = 0; i < imageData.data.length; i += 4) {
+			if (imageData.data[i + 3] < 255) {
+				isTransparent = true;
+				break;
+			}
+		}
+
+		if (!isTransparent) {
+			// Color of upper middle pixel
+			const middle = (width / 2) * 4 - 4;
+			backgroundColor = `${rgbToHex(imageData.data[middle], imageData.data[middle + 1], imageData.data[middle + 2])}`;
+		}
+
+		const stored = JSON.parse(localStorage.getItem("icon-transparency")!);
+
+		stored[url] = isTransparent ? "FALLBACK" : backgroundColor;
+		localStorage.setItem("icon-transparency", JSON.stringify(stored));
+
+		return backgroundColor;
+	}
+
+	if (data.icon.type === "image") {
+		extractBackgroundColor().then((color) => (backgroundColor = color));
+	}
 </script>
 
 <div class="container">
 	<a
 		class="imageContainer"
 		href={data.click.type !== "href" ? "#" : `${data.click.url}`}
-		style={`background: ${data.icon.type === "iconFull" ? data.icon.colors.background : data.icon.type === "iconGradient" ? "linear-gradient(-45deg, " + data.icon.colors.primary + ", " + data.icon.colors.secondary + ")" : "black"}`}
+		style={`background: ${data.icon.type === "iconFull" ? data.icon.colors.background : data.icon.type === "iconGradient" ? "linear-gradient(-45deg, " + data.icon.colors.primary + ", " + data.icon.colors.secondary + ")" : backgroundColor}`}
 		onclick={click}
 		class:dimmed={loading || status !== Status.NONE}
 		class:zoomed={loading}
@@ -229,7 +308,7 @@
 		gap: 6px;
 
 		width: 88px;
-		height: 88px;
+		height: 80px;
 		align-items: center;
 		position: relative;
 
@@ -264,7 +343,7 @@
 	}
 
 	.imageContainer {
-		background-color: black;
+		background-color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -299,9 +378,8 @@
 	}
 
 	.image {
-		width: 100%;
-		height: 100%;
-		background-color: white;
+		width: 80%;
+		height: 80%;
 
 		border-radius: 22.5%;
 

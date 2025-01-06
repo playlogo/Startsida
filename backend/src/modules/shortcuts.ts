@@ -19,7 +19,7 @@ class ShortcutsManager extends Module {
 		icon: "iconoir:apple-shortcuts",
 		colors: {
 			background: "#1c1e59",
-			icon: "#f6605a",
+			icon: "#f75c73",
 		},
 	};
 
@@ -126,11 +126,12 @@ class Shortcut {
 			id: this.id,
 			name: this.name,
 			icon: {
-				type: "iconFull",
+				type: "iconGradient",
 				icon: this.icon,
 				colors: {
-					background: "white",
-					icon: "black",
+					secondary: "#161840",
+					primary: "#474bc4",
+					icon: "#ffffff",
 				},
 			},
 			click: {

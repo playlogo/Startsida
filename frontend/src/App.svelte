@@ -97,13 +97,13 @@
 		position: absolute;
 
 		bottom: 8px;
-		right: 16px;
+		right: 8px;
 	}
 
 	.bottom-right {
 		position: absolute;
 		bottom: 8px;
-		left: 16px;
+		left: 8px;
 	}
 
 	.bottom-right > a {
@@ -111,12 +111,12 @@
 	}
 
 	.bottom-right-mobile {
-		left: 16px;
+		left: 8px;
 		right: unset !important;
 	}
 
 	.bottom-left-mobile {
-		left: 16px;
+		left: 8px;
 		right: unset !important;
 		bottom: 48px;
 	}

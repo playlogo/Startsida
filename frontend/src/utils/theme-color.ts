@@ -5,7 +5,13 @@ export async function updateThemeColor(imageUrl: string) {
 	let storedImages: { [key: string]: string } = {};
 
 	if (localStorage.getItem("accentColors") !== null) {
-		storedImages = JSON.parse(localStorage.getItem("accentColors")!);
+		try {
+			storedImages = JSON.parse(localStorage.getItem("accentColors")!);
+		} catch (err) {
+			// Overwrite broken localstorage
+			console.log(localStorage.getItem("accentColors"));
+			localStorage.setItem("accentColors", JSON.stringify(storedImages));
+		}
 	}
 
 	if (storedImages[imageUrl] !== undefined) {
@@ -36,8 +42,14 @@ export async function updateThemeColor(imageUrl: string) {
 
 	// Draw image
 	ctx.drawImage(image, 0, 0);
+	let imageData;
 
-	const imageData = ctx.getImageData(0, 0, width, height);
+	try {
+		imageData = ctx.getImageData(0, 0, width, height);
+	} catch (err) {
+		console.warn("[theme-color] Cannot get background image data due to CORS");
+		return;
+	}
 
 	const color = { r: 0, g: 0, b: 0 };
 
@@ -70,11 +82,12 @@ export async function updateThemeColor(imageUrl: string) {
 	storedImages[imageUrl] = hex;
 	localStorage.setItem("accentColors", JSON.stringify(storedImages));
 }
-function componentToHex(c: number) {
+
+export function componentToHex(c: number) {
 	var hex = c.toString(16);
 	return hex.length == 1 ? "0" + hex : hex;
 }
 
-function rgbToHex(r: number, g: number, b: number) {
+export function rgbToHex(r: number, g: number, b: number) {
 	return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }

@@ -1,3 +1,4 @@
+import { sleep } from "../utils/async";
 import { updateThemeColor } from "../utils/theme-color";
 
 import { writable } from "svelte/store";
@@ -48,13 +49,25 @@ function buildStore() {
 					});
 				}
 
+				const wallpaperUrl = `${window.api}/wallpapers/${dailyPaper}`;
+
 				// Change body background
-				document.querySelector(
-					"html"
-				)!.style.backgroundImage = `url("${window.api}/wallpapers/${dailyPaper}")`;
+				document.querySelector("html")!.style.backgroundImage = `url("${wallpaperUrl}")`;
+
+				// Add fade in effect
+				const appElement = document.querySelector("#app")! as HTMLElement;
+				let preloaderImg = document.createElement("img");
+
+				preloaderImg.src = wallpaperUrl;
+
+				preloaderImg.addEventListener("load", async (event) => {
+					appElement.style.backgroundColor = "#1a1a1e00";
+					// @ts-expect-error cannot assign null to HTMLElement
+					preloaderImg = null;
+				});
 
 				// Setoff theme color change
-				updateThemeColor(`${window.api}/wallpapers/${dailyPaper}`);
+				updateThemeColor(wallpaperUrl);
 			})();
 		}
 	);

@@ -20,6 +20,10 @@ function buildStore() {
 			fetch(`/gitInfo`)
 				.then((res) => res.json())
 				.then((json) => {
+					if (json["commitHash"] === undefined) {
+						throw new Error("Error getting git version in service worker");
+					}
+
 					set({
 						info: json,
 						isLoading: false,
@@ -27,13 +31,9 @@ function buildStore() {
 					});
 				})
 				.catch((err) => {
-					let errorMessage;
+					let errorMessage = "Service worker unavailable";
 
-					if (err instanceof SyntaxError) {
-						errorMessage = "Service worker unavailable";
-					} else {
-						errorMessage = err.message;
-
+					if (!(err instanceof SyntaxError)) {
 						console.error(`Failed to fetch git info, try again later`);
 						console.error(err);
 					}

@@ -22,6 +22,9 @@
 	touch-action: pan-y;
 }
 
+body {
+	margin: 0;
+}
 /*
 body,
 html {

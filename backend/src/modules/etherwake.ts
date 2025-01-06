@@ -117,11 +117,12 @@ class Device {
 			id: this.id,
 			name: this.name,
 			icon: {
-				type: "iconFull",
+				type: "iconGradient",
 				icon: this.icon,
 				colors: {
-					background: "blue",
-					icon: "black",
+					icon: "white",
+					primary: "#3e7193",
+					secondary: "#0f365b",
 				},
 			},
 			click: {

@@ -3,7 +3,18 @@ const API_HOST = (self.location.port !== "4173" && self.location.port !== "5173"
 
 /* Data */
 /** @type {GitInfo} */
-let gitInfo = {}
+let gitInfo;
+
+async function loadGitInfo() {
+    if (gitInfo === undefined) {
+        const cache = await caches.open('key-value-cache');
+        const response = await cache.match(new Request("gitInfo"));
+
+        if (response) {
+            gitInfo = await response.json();
+        }
+    }
+}
 
 /* Installing & Cache population */
 async function initCache() {
@@ -100,14 +111,7 @@ self.addEventListener('activate', function (event) {
 /* Fetch caching */
 const fetchHandlerOneTimeCache = async (request) => {
     // Ensure gitInfo is loaded
-    if (gitInfo === undefined) {
-        const cache = await caches.open('key-value-cache');
-        const response = await cache.match(new Request("gitInfo"));
-        if (response) {
-            gitInfo = await response.json();
-        }
-    }
-
+    await loadGitInfo();
 
     const responseFromCache = await caches.match(request);
 
@@ -132,13 +136,7 @@ const fetchHandlerOneTimeCache = async (request) => {
 
 const fetchHandlerCacheFirst = async (request) => {
     // Ensure gitInfo is loaded
-    if (gitInfo === undefined) {
-        const cache = await caches.open('key-value-cache');
-        const response = await cache.match(new Request("gitInfo"));
-        if (response) {
-            gitInfo = await response.json();
-        }
-    }
+    await loadGitInfo();
 
     const responseFromCache = await caches.match(request);
 
@@ -165,11 +163,12 @@ const fetchHandlerCacheFirst = async (request) => {
 };
 
 const fetchHandlerInternal = async (request) => {
-    if (gitInfo) {
+    // Try to use internal
+    if (gitInfo !== undefined) {
         return new Response(JSON.stringify(gitInfo))
     }
 
-    // Ensure gitInfo is loaded
+    // If not load it from cache
     const cache = await caches.open('key-value-cache');
     const response = await cache.match(new Request("gitInfo"));
 

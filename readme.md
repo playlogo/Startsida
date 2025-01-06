@@ -46,6 +46,12 @@ Frontend:
 
 - [x] Module icons
 
+ToDos:
+
+- [x] Mobile fixes, gitInfo fix
+- [x] Background image fade in
+- [ ] Come up with way to display groups
+
 ## V3 Target features
 
 Both:
