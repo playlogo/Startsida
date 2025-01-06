@@ -14,7 +14,7 @@ Backend:
 
 Frontend:
 
-- [ ] Mobile friendly
+- [x] Mobile friendly
 - [x] Works offline - Use internet only to update - Service workers!
 - [ ] Groups:
   - [ ] Shows bookmarks with icons and text
@@ -40,7 +40,7 @@ Frontend:
 - [x] Wallpapers!
 - [x] Improve Icon component
 
-- [ ] Mobile padding margin etc support
+- [x] Mobile padding margin etc support
 - [x] Offline caching of assets
 - [x] Status display with git commit
 

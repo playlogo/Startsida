@@ -1,3 +1,5 @@
+import { updateThemeColor } from "../utils/theme-color";
+
 import { writable } from "svelte/store";
 
 function buildStore() {
@@ -50,6 +52,9 @@ function buildStore() {
 				document.querySelector(
 					"html"
 				)!.style.backgroundImage = `url("${window.api}/wallpapers/${dailyPaper}")`;
+
+				// Setoff theme color change
+				updateThemeColor(`${window.api}/wallpapers/${dailyPaper}`);
 			})();
 		}
 	);

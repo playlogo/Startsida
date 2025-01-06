@@ -275,7 +275,7 @@
 		transition: 0.2s;
 		position: relative;
 
-		position: fixed;
+		position: sticky;
 	}
 
 	.imageContainer::before {
@@ -288,12 +288,14 @@
 		transition: 0.2s;
 	}
 
-	.imageContainer:hover:before {
-		background-color: rgba(255, 255, 255, 0.12);
-	}
+	@media (hover: hover) and (pointer: fine) {
+		.imageContainer:hover:before {
+			background-color: rgba(255, 255, 255, 0.12);
+		}
 
-	.imageContainer:hover {
-		scale: 1.1;
+		.imageContainer:hover {
+			scale: 1.1;
+		}
 	}
 
 	.image {
