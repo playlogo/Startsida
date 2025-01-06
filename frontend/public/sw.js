@@ -76,7 +76,6 @@ async function initCache() {
 
     // Add static resources
     await cache.addAll([
-        "/bg/ios_16_1.webp", // TODO: Legacy
         "/favicon.ico",
         "/favicon.png",
         "/favicon.svg",

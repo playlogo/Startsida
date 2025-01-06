@@ -10,7 +10,9 @@ export async function updateThemeColor(imageUrl: string) {
 
 	if (storedImages[imageUrl] !== undefined) {
 		document.querySelector("meta[name='theme-color']")!.setAttribute("content", storedImages[imageUrl]);
-		document.querySelector("html")!.style.background = storedImages[imageUrl];
+		document.querySelector(
+			"html"
+		)!.style.background = `url('${imageUrl}') center center / cover no-repeat padding-box border-box fixed ${storedImages[imageUrl]};`;
 
 		return;
 	}
@@ -60,7 +62,9 @@ export async function updateThemeColor(imageUrl: string) {
 
 	// Apply
 	document.querySelector("meta[name='theme-color']")!.setAttribute("content", hex);
-	document.querySelector("html")!.style.background = hex;
+	document.querySelector(
+		"html"
+	)!.style.background = `url('${imageUrl}') center center / cover no-repeat padding-box border-box fixed ${storedImages[imageUrl]};`;
 
 	// Store in localstorage
 	storedImages[imageUrl] = hex;
