@@ -6,11 +6,12 @@ declare global {
 		api: string;
 	}
 }
-//if (import.meta.env.DEV) {
-window.api = "http://192.168.178.61:8000";
-//} else {
-//window.api = "";
-//}
+
+if (import.meta.env.DEV) {
+	window.api = "http://192.168.178.61:8000";
+} else {
+	window.api = "";
+}
 
 // Load service worker
 const registerServiceWorker = async () => {
