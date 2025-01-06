@@ -59,9 +59,16 @@ async function initCache() {
 
     // Add all wallpapers
     try {
-        let wallpapers = await (await fetch(`${API_HOST}/wallpapers/`)).json();
+        // Index file
+        const reqWallpaper = await fetch(`${API_HOST}/wallpapers/`);
+        await cache.add(reqWallpaper)
+
+        // Individual wallpapers
+        let wallpapers = await (reqWallpaper.clone()).json();
         wallpapers = wallpapers.map((entry) => `${API_HOST}/wallpapers/${entry}`)
         await cache.addAll(wallpapers);
+
+        // TODO: Cache & Index file don't update when new wallpapers added
         console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers`)
     } catch (err) {
         console.error(`[sw] Unable to cache wallpapers: ${err}`)

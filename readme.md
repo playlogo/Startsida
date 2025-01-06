@@ -37,12 +37,12 @@ Backend - Done 05.01.2025:
 Frontend:
 
 - [ ] Groups!
-- [ ] Wallpapers!
+- [x] Wallpapers!
 - [x] Improve Icon component
 
 - [ ] Mobile padding margin etc support
-- [ ] Offline caching of assets
-- [ ] Status display with git commit
+- [x] Offline caching of assets
+- [x] Status display with git commit
 
 - [x] Module icons
 

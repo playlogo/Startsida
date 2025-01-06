@@ -6,6 +6,7 @@ function buildStore() {
 	const { subscribe, set, update } = writable<{
 		info: GitInfo;
 		isLoading: boolean;
+		error?: string;
 	}>(
 		{
 			info: {
@@ -22,11 +23,29 @@ function buildStore() {
 					set({
 						info: json,
 						isLoading: false,
+						error: undefined,
 					});
 				})
 				.catch((err) => {
-					console.error(`Failed to fetch git info, try again later`);
-					console.error(err);
+					let errorMessage;
+
+					if (err instanceof SyntaxError) {
+						errorMessage = "Service worker unavailable";
+					} else {
+						errorMessage = err.message;
+
+						console.error(`Failed to fetch git info, try again later`);
+						console.error(err);
+					}
+
+					set({
+						info: {
+							commitCount: "",
+							commitHash: "",
+						},
+						isLoading: false,
+						error: errorMessage,
+					});
 				});
 		}
 	);

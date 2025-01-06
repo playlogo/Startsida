@@ -4,6 +4,7 @@
 
 	import entries from "./stores/entries";
 	import git from "./stores/git";
+	import wallpaper from "./stores/wallpaper";
 </script>
 
 <main>
@@ -13,9 +14,22 @@
 		{/each}
 	{/if}
 </main>
-<div class="bottom-left">
-	<Icon icon={"ri:git-branch-line"} /><span>{$git.info.commitHash}</span>
-</div>
+
+{#if !$wallpaper.isLoading}
+	<div class="bottom-right">
+		Photo by <a href={$wallpaper.link}>{$wallpaper.creator}</a> on
+		<a href={$wallpaper.platform.url}>{$wallpaper.platform.name}</a>
+	</div>
+{/if}
+{#if !$git.isLoading}
+	<div class="bottom-left">
+		{#if $git.error}
+			<span>{$git.error}</span>
+		{:else}
+			<Icon icon={"ri:git-branch-line"} /><span>{$git.info.commitHash}</span>
+		{/if}
+	</div>
+{/if}
 
 <style>
 	main {
@@ -40,5 +54,23 @@
 
 		color: #eeeeee7c;
 		font-size: 14px;
+	}
+
+	.bottom-right {
+		position: absolute;
+		bottom: 8px;
+		left: 16px;
+
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		justify-content: center;
+
+		color: #eeeeee7c;
+		font-size: 14px;
+	}
+
+	.bottom-right > a {
+		color: #eeeeee7c;
 	}
 </style>
