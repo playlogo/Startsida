@@ -200,7 +200,7 @@ self.addEventListener("fetch", (event) => {
     }
 
     // Own API responses: use and update cache
-    if (url.pathname.endsWith("/entries")) {
+    if (url.pathname.endsWith("/entries") || url.pathname.endsWith("/wallpapers/")) {
         event.respondWith(fetchHandlerCacheFirst(event.request))
         return;
     }

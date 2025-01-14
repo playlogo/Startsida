@@ -37,7 +37,9 @@ class BumbleCoreManager extends Module {
 
 		this.url = this.config["url"] as string;
 
-		const scenes = (await (await fetch(`${this.url}/api/scenes/`)).json()) as {
+		const scenes = (await (
+			await fetch(`${this.url}/api/scenes/`, { signal: AbortSignal.timeout(5000) })
+		).json()) as {
 			name: string;
 			favorite: boolean;
 			icon: string;

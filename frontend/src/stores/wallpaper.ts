@@ -43,7 +43,7 @@ function buildStore() {
 						link: `https://unsplash.com/photos/${dailyPaper.split("-").slice(-2)[0]}`,
 						creator: dailyPaper
 							.split("-")
-							.slice(0, -3)
+							.slice(0, 2)
 							.map((entry) => entry[0].toUpperCase() + entry.slice(1))
 							.join(" "),
 					});

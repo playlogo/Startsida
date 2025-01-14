@@ -54,7 +54,16 @@ ToDos:
 
 ## V3 Target features
 
-Both:
+- [ ] Resize background images
+- [ ] Improve page load experience (black body/meta background maybe)
+
+- [ ] Edit bookmarks (only bookmarks!) from UI (add new ones, change group, change name) -> Rewrite config!
+- [ ] Groups: Row / Grid Setting, "grid" snapping position
+
+- [ ] Grid! Somehow feel good when resizing
+
+## V4 Target features
 
 - [ ] User-Tracking via mongoDB
 - [ ] Authentication new clients via one-time token printed to terminal
+- [ ] Search bar via F1 to find bookmarks
