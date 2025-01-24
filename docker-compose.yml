@@ -3,6 +3,7 @@ name: startsida
 services:
     server:
         image: playlogo/startsida
+        restart: "unless-stopped"
         build: .
         volumes:
             - ./data:/app/data
