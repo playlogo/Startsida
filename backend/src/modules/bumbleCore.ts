@@ -37,20 +37,20 @@ class BumbleCoreManager extends Module {
 			scenes = this.config.demo as any;
 		} else {
 			// Request scene list
-			if (this.config["url"] === undefined) {
-				throw new Error(`[bumble] No url defined in config`);
+			if (this.config["url"] !== undefined) {
+				this.url = this.config["url"] as string;
+
+				scenes = (await (
+					await fetch(`${this.url}/api/scenes/`, { signal: AbortSignal.timeout(5000) })
+				).json()) as {
+					name: string;
+					favorite: boolean;
+					icon: string;
+					colors: { primary: string; secondary: string };
+				}[];
+			} else {
+				scenes = [];
 			}
-
-			this.url = this.config["url"] as string;
-
-			scenes = (await (
-				await fetch(`${this.url}/api/scenes/`, { signal: AbortSignal.timeout(5000) })
-			).json()) as {
-				name: string;
-				favorite: boolean;
-				icon: string;
-				colors: { primary: string; secondary: string };
-			}[];
 		}
 
 		for (const scene of scenes) {

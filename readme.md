@@ -1,69 +1,47 @@
 # Startsida
 
-Custom cross device browser start page
+A modern, customizable browser startpage that works offline and synchronizes across devices. Perfect when you use lot's of awesome self hosted software across many devices.
 
-## V1 Target features - Reached 01.01.2025
+![Banner](docs/banner.png)
 
-Backend:
+## Features
 
-- [x] Serve bookmarks
-  - [x] Download and serve icons
-- [x] Serve frontend
-- [x] Ethernet wake for clients
-- [x] Terminal: Script execution
+✨ **Core Features**
 
-Frontend:
+- **Offline support**: Full functional clients even without an internet connection
+- **Auto-Sync**: Clients automatically update when online
+- **Easy Configuration**: Everything is configured via simple JSON files on the server
+- **Custom Wallpapers**: Simply place them under the `wallpapers` folder and restart the server
+- **Easy deployment**: [Just start one docker container](#tutorial)
 
-- [x] Mobile friendly
-- [x] Works offline - Use internet only to update - Service workers!
-- [ ] Groups:
-  - [ ] Shows bookmarks with icons and text
-  - [ ] Shows actions (ethernet wake, script execution) with icons
-- [x] Icons look like from a apple app
+🚀 **Advanced features using `modules`**
 
-## V2 Target features
+- **Shortcuts**: Execute shell commands on the server
+- **Wake-on-LAN**: Turn on your PCs remotely
+- **Smart-Home**: Activate scenes from your *bumbleCore* Smarthome (Home-Assistant support coming soon tm)
 
-Backend - Done 05.01.2025:
+🕑 **Planed features**
 
-- [x] Ping endpoint
-- [x] Shortcut support
-- [x] BumbleCore
-- [x] Plugin system
-- [x] Custom icons for bookmarks
-- [x] Try to fix none loading bookmarks on later start, ~~maybe~~ schedule with Deno.cron
-- [x] Wallpapers!
-- [x] Fixes
+- **Groups**: Organize your bookmarks and more using groups
+- **Authentication**: Simple one-time authentication for  new devices
 
-Frontend:
+## Tutorial
 
-- [ ] Groups!
-- [x] Wallpapers!
-- [x] Improve Icon component
+Server installation:
 
-- [x] Mobile padding margin etc support
-- [x] Offline caching of assets
-- [x] Status display with git commit
+1. Clone this repo: `git clone https://github.com/playlogo/Startsida.git`
+2. Start the docker container: `sudo docker compose up -d --build`
+3. Startsida is now running on: `http://your-ip:8000/`
+Optional: Use a reverse proxy like Nginx to add SSL
 
-- [x] Module icons
+Configuration:
 
-ToDos:
+1. Edit the JSON config files inside `data/`
+(Tip: Use an editor with JSON support like VSCode for autocomplete!)
+2. Restart the server
 
-- [x] Mobile fixes, gitInfo fix
-- [x] Background image fade in
-- [ ] Come up with way to display groups
+Browser Setup:
 
-## V3 Target features
-
-- [ ] Resize background images
-- [ ] Improve page load experience (black body/meta background maybe)
-
-- [ ] Edit bookmarks (only bookmarks!) from UI (add new ones, change group, change name) -> Rewrite config!
-- [ ] Groups: Row / Grid Setting, "grid" snapping position
-
-- [ ] Grid! Somehow feel good when resizing
-
-## V4 Target features
-
-- [ ] User-Tracking via mongoDB
-- [ ] Authentication new clients via one-time token printed to terminal
-- [ ] Search bar via F1 to find bookmarks
+- **Firefox**: [How to set the homepage | Mozilla Support](https://support.mozilla.org/en-US/kb/how-to-set-the-home-page)
+- **Chrome/Brave/Opera**: [Choose your homepage | Google Help](https://support.google.com/chrome/answer/95314#:~:text=Choose%20your%20homepage)
+- **iOS Safari**: [Use this awesome extension | Github](https://github.com/infinitepower18/Homepage-MobileSafari)
