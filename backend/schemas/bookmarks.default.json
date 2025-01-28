@@ -1,4 +1,38 @@
 {
     "$schema": "../schemas/bookmarks.schema.json",
-    "version": 1
+    "version": 1,
+    "Hackclub": [
+        {
+            "icon": "https://assets.hackclub.com/icon-square.png",
+            "name": "Hackclub",
+            "url": "https://hackclub.com/"
+        },
+        {
+            "name": "Slack",
+            "url": "https://slack.com/",
+            "icon": "https://a.slack-edge.com/80588/marketing/img/meta/slack_hash_256.png"
+        },
+        "WakaTime|https://waka.hackclub.com/"
+    ],
+    "Self-Hosted": [
+        "Memos|https://www.usememos.com/",
+        "Hoarder|https://hoarder.app/",
+        "Bitwarden|https://bitwarden.com/de-de/",
+        "Gitea|https://about.gitea.com/",
+        "Immich|https://immich.app/",
+        "Jellyfin|https://jellyfin.org/"
+    ],
+    "3D-Printing": [
+        "Fluidd|https://docs.fluidd.xyz/",
+        "Moonraker|https://moonraker.readthedocs.io/en/"
+    ],
+    "Smart-Home": [
+        "Home assistant|https://www.home-assistant.io/",
+        "Zigbee2Mqtt|https://www.zigbee2mqtt.io/",
+        {
+            "icon": "https://grafana.com/static/assets/img/fav32.png",
+            "name": "Grafana",
+            "url": "https://grafana.com/"
+        }
+    ]
 }

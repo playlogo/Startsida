@@ -1,4 +1,10 @@
 {
     "$schema": "../schemas/wol.schema.json",
-    "version": 1
+    "version": 1,
+    "Wake-On-Lan": {
+        "NAS": {
+            "icon": "zondicons:hard-drive",
+            "mac": "j6:34:89:03:e9:27"
+        }
+    }
 }

@@ -1,4 +1,10 @@
 {
     "$schema": "../schemas/shortcuts.schema.json",
-    "version": 1
+    "version": 1,
+    "Shutdown": {
+        "NAS": {
+            "icon": "material-symbols:power-settings-circle-rounded",
+            "cmd": "ping -c 5 www.example.com"
+        }
+    }
 }

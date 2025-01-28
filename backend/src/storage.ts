@@ -28,7 +28,7 @@ class StorageManager {
 		}
 
 		// Collect Key-Value entries
-		if (await exists(`${this.#CACHE_DIR}e/storage.json`)) {
+		if (await exists(`${this.#CACHE_DIR}/storage.json`)) {
 			// Try to parse it
 			try {
 				const content = await Deno.readTextFile(`${this.#CACHE_DIR}/storage.json`);

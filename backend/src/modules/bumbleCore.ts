@@ -30,21 +30,28 @@ class BumbleCoreManager extends Module {
 		// Load config
 		this.config = await loadConfig("bumble", this.configSchemaVersion);
 
-		// Request scene list
-		if (this.config["url"] === undefined) {
-			throw new Error(`[bumble] No url defined in config`);
+		// Check if demo mode
+		let scenes;
+
+		if (this.config.demo !== undefined) {
+			scenes = this.config.demo as any;
+		} else {
+			// Request scene list
+			if (this.config["url"] === undefined) {
+				throw new Error(`[bumble] No url defined in config`);
+			}
+
+			this.url = this.config["url"] as string;
+
+			scenes = (await (
+				await fetch(`${this.url}/api/scenes/`, { signal: AbortSignal.timeout(5000) })
+			).json()) as {
+				name: string;
+				favorite: boolean;
+				icon: string;
+				colors: { primary: string; secondary: string };
+			}[];
 		}
-
-		this.url = this.config["url"] as string;
-
-		const scenes = (await (
-			await fetch(`${this.url}/api/scenes/`, { signal: AbortSignal.timeout(5000) })
-		).json()) as {
-			name: string;
-			favorite: boolean;
-			icon: string;
-			colors: { primary: string; secondary: string };
-		}[];
 
 		for (const scene of scenes) {
 			this.scenes[scene.name] = new Scene(scene.name, scene.icon, [
@@ -59,7 +66,7 @@ class BumbleCoreManager extends Module {
 
 	parseConfig() {
 		for (const [key, value] of Object.entries(this.config)) {
-			if (key === "$schema" || key === "version" || key === "url") {
+			if (key === "$schema" || key === "version" || key === "url" || key === "demo") {
 				continue;
 			}
 
