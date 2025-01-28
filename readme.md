@@ -2,7 +2,7 @@
 
 A modern, customizable browser startpage that works offline and synchronizes across devices. Perfect when you use lot's of awesome self hosted software across many devices.
 
-![Banner](docs/banner.png)
+![Banner](https://raw.githubusercontent.com/playlogo/Startsida/main/docs/banner.png)
 
 ## Features
 
