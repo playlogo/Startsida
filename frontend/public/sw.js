@@ -13,9 +13,21 @@ async function loadGitInfo() {
         if (response) {
             gitInfo = await response.json();
         } else {
-            gitInfo = {
-                commitCount: -1,
-                commitHash: "dev"
+            // Try to fetch manifest
+            try {
+                const manifest = await (await fetch(`/.vite/manifest.json`)).json();
+                gitInfo = manifest.gitInfo
+
+
+                // Store manifest
+                const key_value_cache = await caches.open('key-value-cache');
+                await key_value_cache.put(new Request("gitInfo"), new Response(JSON.stringify(gitInfo)));
+            } catch (err) {
+                console.error(`[sw] Unable to load manifest, likely dev build: ${err}`)
+                gitInfo = {
+                    commitCount: -1,
+                    commitHash: "dev"
+                }
             }
         }
     }
