@@ -40,8 +40,9 @@ branch = "main" # Remote main branch
 interval = 5 # Fetch interval in minutes
 ```
 
-2. Start the docker container: `sudo docker compose up -d --build`
-3. Startsida is now running on: `http://your-ip:8000/`
+2. Create `cache/` and `data/`: `mkdir cache/ && mkdir data/`
+3. Start the docker container: `sudo docker compose up -d --build`
+4. Startsida is now running on: `http://your-ip:8000/`
 Optional: Use a reverse proxy like Nginx to add SSL
 
 Configuration:

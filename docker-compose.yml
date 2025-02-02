@@ -7,8 +7,8 @@ services:
         user: "1000"
         build: .
         volumes:
-            - ./data:/app/data
-            - ./cache:/app/cache
+            - ./data:/app/data:rw
+            - ./cache:/app/cache:rw
         ports:
             - "8000:8000"
         network_mode: "host"
