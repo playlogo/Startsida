@@ -12,6 +12,11 @@ async function loadGitInfo() {
 
         if (response) {
             gitInfo = await response.json();
+        } else {
+            gitInfo = {
+                commitCount: -1,
+                commitHash: "dev"
+            }
         }
     }
 }
@@ -127,9 +132,11 @@ const fetchHandlerOneTimeCache = async (request) => {
         return responseFromNetwork;
     }
 
-    // Store in cache
-    const cache = await caches.open(`cache-v${gitInfo.commitCount}`);
-    cache.put(request, responseFromNetwork.clone());
+    // Store in cache if successful
+    if (responseFromNetwork.ok) {
+        const cache = await caches.open(`cache-v${gitInfo.commitCount}`);
+        cache.put(request, responseFromNetwork.clone());
+    }
 
     return responseFromNetwork;
 };
@@ -145,8 +152,12 @@ const fetchHandlerCacheFirst = async (request) => {
         let responseFromNetwork;
         try {
             responseFromNetwork = await fetch(request);
-            const cache = await caches.open(`cache-v${gitInfo.commitCount}`);
-            cache.put(request, responseFromNetwork.clone());
+
+            // Store if successful
+            if (responseFromNetwork.ok) {
+                const cache = await caches.open(`cache-v${gitInfo.commitCount}`);
+                cache.put(request, responseFromNetwork.clone());
+            }
         } catch (err) {
             console.error(`[sw] Unable to fetch resource: ${err}`);
         }

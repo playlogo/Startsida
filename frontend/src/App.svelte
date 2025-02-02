@@ -55,13 +55,12 @@
 
 <style>
 	main {
-		display: flex;
-		flex-wrap: wrap;
-		flex-direction: row; /* This makes items flow from right to left */
-		gap: 8px;
-		row-gap: 24px;
-
 		padding: 48px;
+
+		display: grid;
+		grid-template-columns: repeat(auto-fill, 88px);
+		grid-gap: 24px 8px;
+		justify-content: space-between;
 	}
 
 	main.mobile {
@@ -108,6 +107,29 @@
 
 	.bottom-right > a {
 		color: #eeeeee7c;
+	}
+
+	/* Bottom small view */
+	@media (max-width: 500px) {
+		.bottom-right {
+			left: 8px;
+			right: unset !important;
+		}
+
+		.bottom-left {
+			left: 8px;
+			right: unset !important;
+			bottom: 48px;
+		}
+
+		main {
+			padding: 12px;
+			padding-top: 24px;
+
+			justify-content: center;
+
+			padding-bottom: 128px;
+		}
 	}
 
 	.bottom-right-mobile {
