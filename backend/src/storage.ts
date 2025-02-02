@@ -66,16 +66,15 @@ class StorageManager {
 		}
 
 		// Start git pull loop
-		await this.#runGit();
+		if (this.#configIndex["repo"] !== undefined) {
+			console.log(`[storage] [git] Syncing enabled`);
+			await this.#runGit();
+		} else {
+			console.log(`[storage] [git] Syncing disabled`);
+		}
 	}
 
 	async #runGit() {
-		// Load config
-		if (this.#configIndex["repo"] === undefined) {
-			console.log(`[storage] [git] Syncing disabled`);
-			return;
-		}
-
 		const repoConfig = this.#configIndex["repo"] as {
 			url: string;
 			branch: string;

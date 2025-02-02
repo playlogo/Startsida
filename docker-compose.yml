@@ -4,6 +4,7 @@ services:
     server:
         image: playlogo/startsida
         restart: "unless-stopped"
+        user: "1000"
         build: .
         volumes:
             - ./data:/app/data
