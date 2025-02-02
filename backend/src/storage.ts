@@ -142,7 +142,7 @@ class StorageManager {
 			this.#runGit();
 		};
 
-		setTimeout(cb.bind(this), 1000 * 20);
+		setTimeout(cb.bind(this), 1000 * 60 * repoConfig.interval);
 	}
 
 	async #exec(
