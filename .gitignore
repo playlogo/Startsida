@@ -3,3 +3,4 @@ data/
 backend/cache/**/*
 !backend/cache/cache
 cache/
+backend/data

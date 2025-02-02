@@ -1,9 +1,9 @@
-import cache from "./storage.ts";
+import storage from "./storage.ts";
 import moduleManager from "local/src/modules.ts";
 import app from "local/src/api.ts";
 
 // Load cache
-await cache.init();
+await storage.init();
 
 // Collect modules
 await moduleManager.collect();

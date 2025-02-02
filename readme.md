@@ -30,6 +30,16 @@ A modern, customizable browser startpage that works offline and synchronizes acr
 Server installation:
 
 1. Clone this repo: `git clone https://github.com/playlogo/Startsida.git`
+
+Optional: Setup automatic git synchronization of your bookmarks: Create and edit `data/config.toml`:
+
+```toml
+[repo]
+url = "" # Git clone URL to your repo, can be empty if git repo already cloned
+branch = "main" # Remote main branch
+interval = 5 # Fetch interval in minutes
+```
+
 2. Start the docker container: `sudo docker compose up -d --build`
 3. Startsida is now running on: `http://your-ip:8000/`
 Optional: Use a reverse proxy like Nginx to add SSL
