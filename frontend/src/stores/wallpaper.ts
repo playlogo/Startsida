@@ -41,7 +41,7 @@ function buildStore() {
 				};
 
 				// Check if image is from unsplash
-				const unsplash_regex = /^([a-zA-Z-]+)-([_a-zA-Z0-9-]+)-unsplash\.jpg$/;
+				const unsplash_regex = /^([a-zA-Z-]+)-([_a-zA-Z0-9-]{11})-unsplash\.jpg$/;
 				const unsplash_match = dailyPaper.match(unsplash_regex);
 
 				if (unsplash_match) {
@@ -51,7 +51,7 @@ function buildStore() {
 						creator: creator
 							.replace("-", " ")
 							.split(" ")
-							.map((entry) => entry[0].toLowerCase() + entry.slice(1))
+							.map((entry) => entry[0].toUpperCase() + entry.slice(1))
 							.join(" "),
 						link: `https://unsplash.com/photos/${id}`,
 						platform: {
