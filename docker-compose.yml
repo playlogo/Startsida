@@ -26,5 +26,6 @@ services:
             - IMGPROXY_QUALITY=85
             - IMGPROXY_PREFERRED_FORMATS=webp
             - IMGPROXY_MAX_SRC_RESOLUTION=9999
+            - IMGPROXY_IGNORE_SSL_VERIFICATION=true
         extra_hosts:
             - "host.docker.internal:host-gateway"
