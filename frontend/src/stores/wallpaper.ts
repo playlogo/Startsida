@@ -1,4 +1,3 @@
-import { sleep } from "../utils/async";
 import { updateThemeColor } from "../utils/theme-color";
 
 import { writable } from "svelte/store";
@@ -31,27 +30,69 @@ function buildStore() {
 
 				const dailyPaper = papers[(new Date().getDate() + 2) % papers.length];
 
-				if (dailyPaper.split(".")[0].endsWith("unsplash")) {
-					// Extract creator and give attribution
-					set({
-						isLoading: false,
-						image: dailyPaper,
+				// Try to extract image credit from filename
+				let imageCredit = {
+					platform: {
+						name: "Unknown",
+						url: "#",
+					},
+					creator: "Unknown",
+					link: "#",
+				};
+
+				// Check if image is from unsplash
+				const unsplash_regex = /^([a-zA-Z-]+)-([_a-zA-Z0-9-]+)-unsplash\.jpg$/;
+				const unsplash_match = dailyPaper.match(unsplash_regex);
+
+				if (unsplash_match) {
+					// From unsplash!
+					const [_, creator, id] = unsplash_match;
+					imageCredit = {
+						creator: creator
+							.replace("-", " ")
+							.split(" ")
+							.map((entry) => entry[0].toLowerCase() + entry.slice(1))
+							.join(" "),
+						link: `https://unsplash.com/photos/${id}`,
 						platform: {
 							name: "Unsplash",
 							url: "https://unsplash.com/",
 						},
-						link: `https://unsplash.com/photos/${dailyPaper.split("-").slice(-2)[0]}`,
-						creator: dailyPaper
-							.split("-")
-							.slice(0, 2)
-							.map((entry) => entry[0].toUpperCase() + entry.slice(1))
-							.join(" "),
-					});
+					};
 				}
 
-				const wallpaperUrl = `${window.api}/wallpapers/${dailyPaper}`;
+				set({
+					isLoading: false,
+					image: dailyPaper,
+					platform: imageCredit.platform,
+					link: imageCredit.link,
+					creator: imageCredit.creator,
+				});
 
-				// Change body background
+				// Get right image size for screen
+				const imageSizes = {
+					1920: "1920:1080",
+					2560: "2560:1440",
+					3840: "3840:2160",
+				};
+
+				const requiredHeight = Math.max(window.innerWidth, window.innerHeight);
+				let imageSize = imageSizes[3840];
+
+				for (const entry of Object.entries(imageSizes)) {
+					if (parseInt(entry[0]) < requiredHeight) {
+						continue;
+					}
+
+					imageSize = entry[1];
+					break;
+				}
+
+				const wallpaperUrl = `${window.location.protocol}//${window.location.hostname}:${
+					parseInt(window.location.port) + 2
+				}/insecure/rs:fill:${imageSize}/plain/wallpapers/${dailyPaper}@webp`; //`${window.api}/wallpapers/${dailyPaper}`;
+
+				// Apply image
 				document.querySelector("html")!.style.backgroundImage = `url("${wallpaperUrl}")`;
 
 				// Add fade in effect

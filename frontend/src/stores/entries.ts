@@ -14,16 +14,16 @@ function buildStore() {
 			isLoading: true,
 		},
 		function start() {
-			// Start loading
-			fetch(`${window.api}/entries`)
-				.then((res) => res.json())
-				.then((json) => {
-					set({
-						entries: json.entries,
-						modules: json.modules,
-						isLoading: false,
-					});
+			(async () => {
+				const res = await fetch(`${window.api}/entries`);
+				const entries: { entries: Entry[]; modules: any } = await res.json();
+
+				set({
+					entries: entries.entries,
+					modules: entries.modules,
+					isLoading: false,
 				});
+			})();
 		}
 	);
 

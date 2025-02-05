@@ -96,9 +96,17 @@ export async function gatherIconURL(reqUrl: string, name: string) {
 
 	// Try to get favicon
 	try {
-		let faviconImage = `${doc.querySelector("link[rel='icon']")!.getAttribute("href")}`;
+		let faviconImage = `${doc.querySelector("link[rel*='icon']")!.getAttribute("href")}`;
+		let embedded = false;
 
-		if (faviconImage.startsWith("/")) {
+		if (faviconImage.startsWith("data:image")) {
+			// Embedded image
+			faviconImage = faviconImage;
+			embedded = true;
+		} else if (faviconImage.startsWith("http")) {
+			// Absolute url
+			faviconImage = faviconImage;
+		} else if (faviconImage.startsWith("/")) {
 			const url = new URL(resUrl);
 			faviconImage = `${url.protocol}//${url.hostname}:${url.port}${faviconImage}`;
 		} else {
@@ -112,7 +120,11 @@ export async function gatherIconURL(reqUrl: string, name: string) {
 			throw new Error("Invalid status code");
 		}
 
-		console.log(`[bookmarks] [icon] Found icon for '${name}' using favicon : ${faviconImage}`);
+		console.log(
+			`[bookmarks] [icon] Found icon for '${name}' using ${
+				embedded ? "embedded " : ""
+			}favicon : ${faviconImage}`
+		);
 
 		return faviconImage;
 	} catch (_err) {

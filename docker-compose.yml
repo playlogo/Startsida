@@ -1,8 +1,9 @@
 name: startsida
 
 services:
-    server:
+    api:
         image: playlogo/startsida
+        container_name: startsida
         restart: "unless-stopped"
         user: "1000"
         build: .
@@ -12,3 +13,18 @@ services:
         ports:
             - "8000:8000"
         network_mode: "host"
+
+    imgproxy:
+        image: ghcr.io/imgproxy/imgproxy:latest
+        container_name: imgproxy
+        restart: unless-stopped
+        ports:
+            - "8002:8080"
+        environment:
+            - IMGPROXY_BASE_URL=http://host.docker.internal:8000/
+            - IMGPROXY_ENABLE_WEBP=true
+            - IMGPROXY_QUALITY=85
+            - IMGPROXY_PREFERRED_FORMATS=webp
+            - IMGPROXY_MAX_SRC_RESOLUTION=9999
+        extra_hosts:
+            - "host.docker.internal:host-gateway"

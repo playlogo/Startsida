@@ -4,7 +4,7 @@ import storage from "../../storage.ts";
 
 import { hash, loadConfig } from "../../utils.ts";
 import { gatherIconURL } from "./icons.ts";
-import { Entry, Module } from "../../common.ts";
+import { Entry, ImageIcon, Module } from "../../common.ts";
 
 class BookmarksManager extends Module {
 	configSchemaVersion = 1;
@@ -64,11 +64,19 @@ class BookmarksManager extends Module {
 					continue;
 				}
 
-				try {
-					bookmark.icon = await storage.bucket.download(bookmark.hash!, url);
-				} catch (err) {
-					console.error(err);
-					continue;
+				// Check if is image embedded
+				if (url.startsWith("data:image")) {
+					bookmark.icon = url;
+
+					await storage.storage.set(`icons/${bookmark.hash}`, url);
+				} else {
+					// Else fetch it
+					try {
+						bookmark.icon = await storage.bucket.download(bookmark.hash!, url);
+					} catch (err) {
+						console.error(err);
+						continue;
+					}
 				}
 
 				console.log(`[bookmarks] [gatherMissingIcons] Found icon for ${bookmark.name}`);
@@ -196,7 +204,12 @@ class Bookmark {
 		}
 
 		// Check if icon loacally cached
-		if (storage.bucket.has(this.hash!)) {
+		if (storage.storage.has(`icons/${this.hash}`)) {
+			// Check embedded image cache first
+			this.icon = storage.storage.get(`icons/${this.hash}`);
+			return;
+		} else if (storage.bucket.has(this.hash!)) {
+			// Check file cache
 			this.icon = storage.bucket.get(this.hash!);
 			return;
 		}
@@ -218,7 +231,15 @@ class Bookmark {
 		// Gather & Download
 		try {
 			const url = await gatherIconURL(this.url, this.name);
-			this.icon = await storage.bucket.download(this.hash!, url);
+
+			// Check if is image embedded
+			if (url.startsWith("data:image")) {
+				this.icon = url;
+				await storage.storage.set(`icons/${this.hash!}`, url);
+			} else {
+				// Else fetch it
+				this.icon = await storage.bucket.download(this.hash!, url);
+			}
 		} catch (err) {
 			if (err instanceof Deno.errors.NotFound) {
 				console.warn(err.message);
@@ -238,17 +259,13 @@ class Bookmark {
 	}
 
 	common(group: string = ""): Entry {
-		return {
+		const res: Entry = {
 			id: this.hash!,
 
 			name: this.name,
 			icon: {
 				type: "image",
-				url: `/bookmarks/images/${
-					this.icon === undefined
-						? bookmarkManager.fallbackImage
-						: this.icon.split("/").slice(-1)[0]
-				}`,
+				url: "",
 			},
 
 			click: {
@@ -259,5 +276,16 @@ class Bookmark {
 			group: group,
 			module: "Bookmarks",
 		};
+
+		// Icon
+		if (this.icon !== undefined && this.icon?.startsWith("data:image")) {
+			(res.icon as ImageIcon).url = this.icon;
+		} else {
+			(res.icon as ImageIcon).url = `/bookmarks/images/${
+				this.icon === undefined ? bookmarkManager.fallbackImage : this.icon.split("/").slice(-1)[0]
+			}`;
+		}
+
+		return res;
 	}
 }

@@ -78,7 +78,7 @@ async function initCache() {
     const cache = await caches.open(currentCache);
 
     // Add all resource from manifest.json
-    await cache.addAll([manifest["index.html"]["file"], ...manifest["index.html"]["css"]]);
+    await cache.addAll([manifest["index.html"]["file"]]);
     console.log(`[sw] Cache populated with resources from manifest`)
 
     // Store manifest
@@ -91,13 +91,26 @@ async function initCache() {
         const reqWallpaper = await fetch(`${API_HOST}/wallpapers/`);
         await cache.add(reqWallpaper)
 
-        // Individual wallpapers
-        let wallpapers = await (reqWallpaper.clone()).json();
-        wallpapers = wallpapers.map((entry) => `${API_HOST}/wallpapers/${entry}`)
-        await cache.addAll(wallpapers);
+        // Individual wallpapers and their scaled variants
+        const imageSizes = {
+            1920: "1920:1080",
+            2560: "2560:1440",
+            3840: "3840:2160",
+        };
 
-        // TODO: Cache & Index file don't update when new wallpapers added
-        console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers`)
+        let wallpapers = await (reqWallpaper.clone()).json();
+        const wallpaper_urls = []
+
+        wallpapers.forEach(element => {
+            for (const [_, size] of Object.entries(imageSizes)) {
+                wallpaper_urls.push(`${self.location.protocol}//${self.location.hostname}:${parseInt(self.location.port) + 2
+                    }/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`)
+            }
+        });
+
+        await cache.addAll(wallpaper_urls);
+
+        console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers at ${Object.entries(imageSizes).length} sizes totalling ${wallpaper_urls} images`)
     } catch (err) {
         console.error(`[sw] Unable to cache wallpapers: ${err}`)
     }

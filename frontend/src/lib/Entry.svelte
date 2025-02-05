@@ -11,6 +11,7 @@
 	// Consts
 	const MIN_REQUEST_DURATION = 1000;
 	const FALLBACK_IMAGE_BACKGROUND_COLOR = "white";
+	const IMAGE_SCALE_FACTOR_TARGET = 0.9;
 
 	const Status = {
 		NONE: "NONE",
@@ -94,45 +95,96 @@
 	}
 
 	// Background color
-	let backgroundColor = $state(FALLBACK_IMAGE_BACKGROUND_COLOR);
+	let properties = $state<ImageProperties>({
+		backgroundColor: FALLBACK_IMAGE_BACKGROUND_COLOR,
+		size: {
+			scaleFactor: 0,
+			real: {
+				width: 0,
+				height: 0,
+			},
+			dimensions: {
+				width: 0,
+				height: 0,
+			},
+		},
+		transparent: false,
+	});
 
-	async function extractBackgroundColor() {
-		// Try to find color in cache
+	interface ImageProperties {
+		backgroundColor: string;
+
+		size: {
+			scaleFactor: number;
+			real: {
+				width: number;
+				height: number;
+			};
+			dimensions: {
+				width: number;
+				height: number;
+			};
+		};
+
+		transparent: boolean;
+	}
+
+	async function extractImageProperties(): Promise<ImageProperties> {
+		const imageProperties: ImageProperties = {
+			backgroundColor: FALLBACK_IMAGE_BACKGROUND_COLOR,
+			size: {
+				scaleFactor: 0,
+				real: {
+					width: 0,
+					height: 0,
+				},
+				dimensions: {
+					width: 0,
+					height: 0,
+				},
+			},
+			transparent: false,
+		};
+
+		// Try to find data in cache
 		const url = (data.icon as ImageIcon).url;
 
-		if (localStorage.getItem("icon-transparency") !== null) {
-			const parsed = JSON.parse(localStorage.getItem("icon-transparency")!);
+		if (localStorage.getItem("icon-data") !== null) {
+			const parsed = JSON.parse(localStorage.getItem("icon-data")!);
 			if (parsed[url] !== undefined) {
-				if (parsed[url] === "FALLBACK") {
-					return FALLBACK_IMAGE_BACKGROUND_COLOR;
-				} else {
-					return parsed[url];
+				const entry = parsed[url];
+
+				// Check if legacy
+				if (typeof entry === "string" || entry instanceof String) {
+					// Update legacy
+					localStorage.setItem("icon-data", JSON.stringify({}));
+					window.location.reload();
 				}
+
+				return entry;
 			}
 		} else {
-			localStorage.setItem("icon-transparency", JSON.stringify({}));
+			localStorage.setItem("icon-data", JSON.stringify({}));
 		}
 
-		// Else extract it now
-		let isTransparent = false;
-		let backgroundColor = FALLBACK_IMAGE_BACKGROUND_COLOR;
-
+		// Extract it from image
 		const canvas = document.createElement("canvas");
 		const ctx = canvas.getContext("2d")!;
 
+		// Load image
 		const image = document.createElement("img");
 		await new Promise<void>((resolve, _reject) => {
 			image.src = `${window.api}${url}`;
 
-			image.onload = (ele) => {
+			image.onload = (_element) => {
 				resolve();
 			};
 		});
 
+		// Draw image to a js canvas
 		const height = (canvas.height = image.naturalHeight);
 		const width = (canvas.width = image.naturalWidth);
 
-		// Draw image
 		ctx.drawImage(image, 0, 0);
 		let imageData;
 
@@ -140,33 +192,78 @@
 			imageData = ctx.getImageData(0, 0, width, height);
 		} catch (err) {
 			console.warn(`[icon] Cannot extract background from image '${window.api}${url}' due to CORS`);
-			return FALLBACK_IMAGE_BACKGROUND_COLOR;
+			return imageProperties;
 		}
 
-		// Check if any pixel is transparent
-		for (var i = 0; i < imageData.data.length; i += 4) {
-			if (imageData.data[i + 3] < 255) {
-				isTransparent = true;
-				break;
+		// Extract real image size (ignoring white/transparent borders)
+		let content_minX = image.width,
+			content_maxX = 0,
+			content_minY = image.height,
+			content_maxY = 0;
+
+		for (let y = 0; y < image.height; y++) {
+			for (let x = 0; x < image.width; x++) {
+				let index = (y * image.width + x) * 4;
+				let alpha = imageData.data[index + 3]; // Alpha channel
+
+				// Check if image has transparency
+				if (alpha === 0) {
+					imageProperties.transparent = true;
+				}
+
+				if (
+					alpha > 0 &&
+					imageData.data[index] !== 255 &&
+					imageData.data[index + 1] !== 255 &&
+					imageData.data[index + 2] !== 255
+				) {
+					// Pixel is not transparent
+					content_minX = Math.min(content_minX, x);
+					content_maxX = Math.max(content_maxX, x);
+					content_minY = Math.min(content_minY, y);
+					content_maxY = Math.max(content_maxY, y);
+				}
 			}
 		}
 
-		if (!isTransparent) {
-			// Color of upper middle pixel
+		imageProperties.size.real.width = content_maxX - content_minX + 1;
+		imageProperties.size.real.height = content_maxY - content_minY + 1;
+
+		imageProperties.size.dimensions.width = image.naturalWidth;
+		imageProperties.size.dimensions.height = image.naturalHeight;
+
+		// Compute image scale factor
+		imageProperties.size.scaleFactor =
+			Math.max(imageProperties.size.real.width, imageProperties.size.real.height) /
+			Math.max(image.naturalWidth, image.naturalHeight);
+
+		imageProperties.size.scaleFactor = Math.min(
+			Math.max(75 + (IMAGE_SCALE_FACTOR_TARGET - imageProperties.size.scaleFactor) * 80, 60),
+			85
+		);
+
+		// If image is not transparent, set background color to color of upper middle pixel
+		if (!imageProperties.transparent) {
 			const middle = (width / 2) * 4 - 4;
-			backgroundColor = `${rgbToHex(imageData.data[middle], imageData.data[middle + 1], imageData.data[middle + 2])}`;
+			imageProperties.backgroundColor = `${rgbToHex(imageData.data[middle], imageData.data[middle + 1], imageData.data[middle + 2])}`;
 		}
 
-		const stored = JSON.parse(localStorage.getItem("icon-transparency")!);
+		// Store results to cache
+		const stored = JSON.parse(localStorage.getItem("icon-data")!);
 
-		stored[url] = isTransparent ? "FALLBACK" : backgroundColor;
-		localStorage.setItem("icon-transparency", JSON.stringify(stored));
+		stored[url] = {
+			backgroundColor: imageProperties.backgroundColor,
+			size: imageProperties.size,
+			transparent: imageProperties.transparent,
+		};
 
-		return backgroundColor;
+		localStorage.setItem("icon-data", JSON.stringify(stored));
+
+		return imageProperties;
 	}
 
 	if (data.icon.type === "image") {
-		extractBackgroundColor().then((color) => (backgroundColor = color));
+		extractImageProperties().then((imageProperties) => (properties = imageProperties));
 	}
 </script>
 
@@ -174,7 +271,7 @@
 	<a
 		class="imageContainer"
 		href={data.click.type !== "href" ? "#" : `${data.click.url}`}
-		style={`background: ${data.icon.type === "iconFull" ? data.icon.colors.background : data.icon.type === "iconGradient" ? "linear-gradient(-45deg, " + data.icon.colors.primary + ", " + data.icon.colors.secondary + ")" : backgroundColor}`}
+		style={`background: ${data.icon.type === "iconFull" ? data.icon.colors.background : data.icon.type === "iconGradient" ? "linear-gradient(-45deg, " + data.icon.colors.primary + ", " + data.icon.colors.secondary + ")" : properties.backgroundColor}`}
 		onclick={click}
 		class:dimmed={loading || status !== Status.NONE}
 		class:zoomed={loading}
@@ -183,9 +280,12 @@
 		{#if data.icon.type === "image"}
 			<img
 				class="image"
-				src={`${window.api}${data.icon.url}`}
+				src={`${window.location.protocol}//${window.location.hostname}:${
+					parseInt(window.location.port) + 2
+				}/insecure/rs:fill:64:64/plain${data.icon.url}@webp`}
 				alt={`${data.name} logo`}
 				draggable="false"
+				style={`width: ${properties.size.scaleFactor}%; height: ${properties.size.scaleFactor}%;`}
 			/>
 		{:else if data.icon.type === "iconFull" || data.icon.type === "iconGradient"}
 			<Icon icon={data.icon.icon} width={32} color={data.icon.colors.icon} />
@@ -378,8 +478,8 @@
 	}
 
 	.image {
-		width: 80%;
-		height: 80%;
+		width: 75%;
+		height: 75%;
 
 		border-radius: 22.5%;
 
@@ -393,7 +493,7 @@
 		display: flex;
 		justify-content: center;
 		position: absolute;
-		bottom: 0;
+		top: 60px;
 	}
 
 	.text > p {
@@ -407,8 +507,10 @@
 
 		overflow: hidden;
 		display: -webkit-box;
-		-webkit-line-clamp: 1;
-		line-clamp: 1;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
+
+		line-height: 18px;
 	}
 </style>
