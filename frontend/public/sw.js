@@ -1,5 +1,3 @@
-const API_HOST = (self.location.port !== "4173" && self.location.port !== "5173") ? "" : "http://192.168.178.61:8000"
-
 /** @type {GitInfo} */
 let gitInfo;
 
@@ -84,7 +82,7 @@ async function initCache() {
     await key_value_cache.put(new Request("gitInfo"), new Response(JSON.stringify(gitInfo)));
 
     // Wallpapers index file
-    const reqWallpaper = await fetch(`${API_HOST}/wallpapers/`);
+    const reqWallpaper = await fetch(`/wallpapers`);
     await cache.addAll([reqWallpaper])
 
     // Add individual wallpapers
@@ -100,7 +98,7 @@ async function initCache() {
 
         wallpapers.forEach(element => {
             for (const [_, size] of Object.entries(imageSizes)) {
-                const promise = fetch(`${API_HOST}/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`).then((res) => {
+                const promise = fetch(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`).then((res) => {
                     return cache.put(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, res)
                 })
 

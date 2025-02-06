@@ -41,9 +41,8 @@ interval = 5 # Fetch interval in minutes
 ```
 
 2. Create `cache/` and `data/`: `mkdir cache/ && mkdir data/`
-3. Start the docker container: `sudo docker compose up -d --build`
-4. Startsida is now running on: `http://your-ip:8000/`
-Optional: Use a reverse proxy like Nginx to add SSL
+3. Start the docker containers: `sudo docker compose up -d --build`
+4. Setup Nginx for ssl: Take a look at `docs/nginx.conf` for inspiration
 
 Configuration:
 

@@ -26,7 +26,7 @@ function buildStore() {
 		},
 		function start() {
 			(async () => {
-				const papers = (await (await fetch(`${window.api}/wallpapers/`)).json()) as string[];
+				const papers = (await (await fetch(`${window.api}/wallpapers`)).json()) as string[];
 
 				const dailyPaper = papers[(new Date().getDate() + 2) % papers.length];
 

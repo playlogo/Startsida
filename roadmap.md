@@ -1,3 +1,5 @@
+# Roadmap
+
 ## V1 Target features - Reached 01.01.2025
 
 Backend:
@@ -17,9 +19,9 @@ Frontend:
   - [ ] Shows actions (ethernet wake, script execution) with icons
 - [x] Icons look like from a apple app
 
-## V2 Target features
+## V2 Target features - Reached 05.01.2025
 
-Backend - Done 05.01.2025:
+Backend:
 
 - [x] Ping endpoint
 - [x] Shortcut support
@@ -32,7 +34,6 @@ Backend - Done 05.01.2025:
 
 Frontend:
 
-- [ ] Groups!
 - [x] Wallpapers!
 - [x] Improve Icon component
 
@@ -42,23 +43,17 @@ Frontend:
 
 - [x] Module icons
 
-ToDos:
+## V3 Target features - Reached 06.02.2025
 
-- [x] Mobile fixes, gitInfo fix
-- [x] Background image fade in
-- [ ] Come up with way to display groups
-
-## V3 Target features
-
-- [ ] Resize background images
-- [ ] Improve page load experience (black body/meta background maybe)
-
-- [ ] Edit bookmarks (only bookmarks!) from UI (add new ones, change group, change name) -> Rewrite config!
-- [ ] Groups: Row / Grid Setting, "grid" snapping position
-
-- [ ] Grid! Somehow feel good when resizing
+- [x] Resize background images
+- [x] Improve page load experience (black body/meta background maybe)
+- [x] Grid! Somehow feel good when resizing
 
 ## V4 Target features
+
+- [ ] Edit bookmarks (only bookmarks!) from UI (add new ones, change group, change name) -> Rewrite config!
+- [ ] Groups!
+- [ ] Groups: Row / Grid Setting, "grid" snapping position
 
 - [ ] User-Tracking via mongoDB
 - [ ] Authentication new clients via one-time token printed to terminal
