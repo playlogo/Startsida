@@ -280,9 +280,7 @@
 		{#if data.icon.type === "image"}
 			<img
 				class="image"
-				src={`${window.location.protocol}//${window.location.hostname}:${
-					parseInt(window.location.port) + 2
-				}/insecure/rs:fill:64:64/plain${data.icon.url}@webp`}
+				src={`/proxy/insecure/rs:fill:64:64/plain${data.icon.url}@webp`}
 				alt={`${data.name} logo`}
 				draggable="false"
 				style={`width: ${properties.size.scaleFactor}%; height: ${properties.size.scaleFactor}%;`}

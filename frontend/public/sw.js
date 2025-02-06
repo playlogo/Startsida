@@ -99,18 +99,21 @@ async function initCache() {
         };
 
         let wallpapers = await (reqWallpaper.clone()).json();
-        const wallpaper_urls = []
+        const promises = []; // Promise[]
 
         wallpapers.forEach(element => {
             for (const [_, size] of Object.entries(imageSizes)) {
-                wallpaper_urls.push(`${self.location.protocol}//${self.location.hostname}:${parseInt(self.location.port) + 2
-                    }/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`)
+                const promise = fetch(`${self.location.protocol}//${self.location.hostname}:${parseInt(self.location.port) + 2
+                    }/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, { mode: "no-cors" }).then((res) => {
+                        return cache.put(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, res)
+                    })
+                promises.push(promise)
             }
         });
 
-        await cache.addAll(wallpaper_urls);
+        await Promise.allSettled(promises)
 
-        console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers at ${Object.entries(imageSizes).length} sizes totalling ${wallpaper_urls} images`)
+        console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers at ${Object.entries(imageSizes).length} sizes`)
     } catch (err) {
         console.error(`[sw] Unable to cache wallpapers: ${err}`)
     }
@@ -215,6 +218,45 @@ const fetchHandlerInternal = async (request) => {
     }
 }
 
+const fetchHandlerImgProxy = async (request) => {
+    // Ensure gitInfo is loaded
+    await loadGitInfo();
+
+    // Load from cache (or get undefined)
+    const url = new URL(request.url);
+    const responseFromCache = await caches.match(url);
+
+    // Fetch from network and update cache
+    const fetchAndUpdateCache = async () => {
+        let responseFromNetwork;
+
+        try {
+            responseFromNetwork = await fetch(`${self.location.protocol}//${self.location.hostname}:${parseInt(self.location.port) + 2
+                }/${url.pathname.replace("/proxy/")}`, { mode: "no-cors", signal: AbortSignal.timeout(3000) });
+
+            // Store if successful
+            if (responseFromNetwork.ok) {
+                const cache = await caches.open(`cache-v${gitInfo.commitCount}`);
+                cache.put(request, responseFromNetwork.clone());
+            }
+        } catch (err) {
+            console.error(`[sw] Unable to fetch resource: ${err}`);
+        }
+
+        return responseFromNetwork;
+    };
+
+
+    if (responseFromCache === undefined) {
+        // Fetch if not in cache
+        return await fetchAndUpdateCache();
+    } else {
+        // Else return response 
+        fetchAndUpdateCache();
+        return responseFromCache;
+    }
+}
+
 self.addEventListener("fetch", (event) => {
     // Ignore extension requests
     if (!event.request.url.startsWith("http")) {
@@ -233,6 +275,11 @@ self.addEventListener("fetch", (event) => {
     if (url.pathname === "/gitInfo") {
         event.respondWith(fetchHandlerInternal(event.request))
         return;
+    }
+
+    // Imgproxy serving
+    if (url.pathname.startsWith("/proxy/")) {
+        event.respondWith(fetchHandlerImgProxy(event.request))
     }
 
     // Own API responses: use and update cache

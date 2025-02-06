@@ -88,9 +88,7 @@ function buildStore() {
 					break;
 				}
 
-				const wallpaperUrl = `${window.location.protocol}//${window.location.hostname}:${
-					parseInt(window.location.port) + 2
-				}/insecure/rs:fill:${imageSize}/plain/wallpapers/${dailyPaper}@webp`; //`${window.api}/wallpapers/${dailyPaper}`;
+				const wallpaperUrl = `/proxy/insecure/rs:fill:${imageSize}/plain/wallpapers/${dailyPaper}@webp`; //`${window.api}/wallpapers/${dailyPaper}`;
 
 				// Apply image
 				document.querySelector("html")!.style.backgroundImage = `url("${wallpaperUrl}")`;
