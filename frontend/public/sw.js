@@ -83,7 +83,7 @@ async function initCache() {
 
     // Wallpapers index file
     const reqWallpaper = await fetch(`/wallpapers`);
-    await cache.put(`/wallpapers`, reqWallpaper)
+    await cache.put(`/wallpapers`, reqWallpaper.clone())
 
     // Add individual wallpapers
     try {
@@ -93,7 +93,7 @@ async function initCache() {
             3840: "3840:2160",
         };
 
-        let wallpapers = await (reqWallpaper.clone()).json();
+        let wallpapers = await (reqWallpaper).json();
         const promises = []; // Promise[]
 
         wallpapers.forEach(element => {
