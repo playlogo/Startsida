@@ -83,13 +83,12 @@ async function initCache() {
     const key_value_cache = await caches.open('key-value-cache');
     await key_value_cache.put(new Request("gitInfo"), new Response(JSON.stringify(gitInfo)));
 
-    // Add all wallpapers
-    try {
-        // Index file
-        const reqWallpaper = await fetch(`${API_HOST}/wallpapers/`);
-        await cache.add(reqWallpaper)
+    // Wallpapers index file
+    const reqWallpaper = await fetch(`${API_HOST}/wallpapers/`);
+    await cache.addAll([reqWallpaper])
 
-        // Individual wallpapers and their scaled variants
+    // Add individual wallpapers
+    try {
         const imageSizes = {
             1920: "1920:1080",
             2560: "2560:1440",
@@ -104,6 +103,7 @@ async function initCache() {
                 const promise = fetch(`${API_HOST}/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`).then((res) => {
                     return cache.put(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, res)
                 })
+
                 promises.push(promise)
             }
         });
@@ -113,6 +113,7 @@ async function initCache() {
         console.log(`[sw] Cache populated with ${wallpapers.length} wallpapers at ${Object.entries(imageSizes).length} sizes`)
     } catch (err) {
         console.error(`[sw] Unable to cache wallpapers: ${err}`)
+        console.error(err)
     }
 
     // Add static resources

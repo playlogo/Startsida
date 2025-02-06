@@ -147,7 +147,7 @@
 		};
 
 		// Try to find data in cache
-		const url = (data.icon as ImageIcon).url;
+		const url = `/proxy/insecure/rs:fill:64:64/plain${(data.icon as ImageIcon).url}@webp`;
 
 		if (localStorage.getItem("icon-data") !== null) {
 			const parsed = JSON.parse(localStorage.getItem("icon-data")!);
