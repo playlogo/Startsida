@@ -83,7 +83,7 @@ async function initCache() {
 
     // Wallpapers index file
     const reqWallpaper = await fetch(`/wallpapers`);
-    await cache.addAll([reqWallpaper])
+    await cache.put(`/wallpapers`, reqWallpaper)
 
     // Add individual wallpapers
     try {
