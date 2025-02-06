@@ -49,7 +49,7 @@ function buildStore() {
 					const [_, creator, id] = unsplash_match;
 					imageCredit = {
 						creator: creator
-							.replace("-", " ")
+							.replaceAll("-", " ")
 							.split(" ")
 							.map((entry) => entry[0].toUpperCase() + entry.slice(1))
 							.join(" "),

@@ -195,7 +195,7 @@ class Bookmark {
 
 	async collectIcon() {
 		if (this.hash === undefined) {
-			this.hash = await hash(`${this.name}|${this.url}`);
+			this.hash = await hash(`${this.name}|${this.url}|${this.icon}`);
 		}
 
 		// Add self to manager if not already
