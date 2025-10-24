@@ -1,32 +1,41 @@
 {
-    "$schema": "../schemas/bookmarks.schema.json",
-    "version": 1,
-    "Hackclub": [
+    "$schema": "../schemas/bookmarks.schema.v2.json",
+    "version": 2,
+    "entries": [
         {
-            "icon": "https://assets.hackclub.com/icon-square.png",
-            "name": "Hackclub",
-            "url": "https://hackclub.com/"
+            "group": "Hackclub",
+            "bookmarks": [
+                {
+                    "icon": "https://assets.hackclub.com/icon-square.png",
+                    "name": "Hackclub",
+                    "url": "https://hackclub.com/"
+                },
+                {
+                    "name": "Slack",
+                    "url": "https://slack.com/",
+                    "icon": "https://a.slack-edge.com/80588/marketing/img/meta/slack_hash_256.png"
+                },
+                "WakaTime|https://waka.hackclub.com/"
+            ]
         },
         {
-            "name": "Slack",
-            "url": "https://slack.com/",
-            "icon": "https://a.slack-edge.com/80588/marketing/img/meta/slack_hash_256.png"
+            "group": "Self-hosted",
+            "bookmarks": [
+                "Memos|https://www.usememos.com/",
+                "Hoarder|https://hoarder.app/",
+                "Bitwarden|https://bitwarden.com/de-de/",
+                "Gitea|https://about.gitea.com/",
+                "Immich|https://immich.app/",
+                "Jellyfin|https://jellyfin.org/"
+            ]
         },
-        "WakaTime|https://waka.hackclub.com/"
-    ],
-    "Self-Hosted": [
-        "Memos|https://www.usememos.com/",
-        "Hoarder|https://hoarder.app/",
-        "Bitwarden|https://bitwarden.com/de-de/",
-        "Gitea|https://about.gitea.com/",
-        "Immich|https://immich.app/",
-        "Jellyfin|https://jellyfin.org/"
-    ],
-    "3D-Printing": [
-        "Fluidd|https://docs.fluidd.xyz/",
-        "Moonraker|https://moonraker.readthedocs.io/en/"
-    ],
-    "Smart-Home": [
+        {
+            "groups": "3D-Printing",
+            "bookmarks": [
+                "Fluidd|https://docs.fluidd.xyz/",
+                "Moonraker|https://moonraker.readthedocs.io/en/"
+            ]
+        },
         "Home assistant|https://www.home-assistant.io/",
         "Zigbee2Mqtt|https://www.zigbee2mqtt.io/",
         {

@@ -2,17 +2,19 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "patternProperties": {
-        "^[^$]*$": {
+        "entries": {
             "type": "array",
-            "description": "A bookmarks group",
+            "description": "The gernal entries group",
             "items": {
                 "oneOf": [
                     {
+                        "$anchor": "bookmarkUrl",
                         "type": "string",
                         "pattern": "^[^|]+\\|[^|]+$",
                         "description": "Name and URL separated using a '|'. Example: Name|URL"
                     },
                     {
+                        "$anchor": "bookmarkSpecific",
                         "type": "object",
                         "properties": {
                             "name": {
@@ -32,6 +34,33 @@
                             "name",
                             "url"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "group": {
+                                "type": "string",
+                                "description": "Name of the subgroup"
+                            },
+                            "bookmarks": {
+                                "type": "array",
+                                "description": "Bookmarks of this subgroup",
+                                "items": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#bookmarkUrl"
+                                        },
+                                        {
+                                            "$ref": "#bookmarkSpecific"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "group",
+                            "bookmarks"
+                        ]
                     }
                 ]
             }
@@ -40,7 +69,8 @@
     "properties": {
         "version": {
             "type": "number",
-            "description": "Config Schema version"
+            "description": "Config Schema version",
+            "const": 2
         }
     },
     "required": [

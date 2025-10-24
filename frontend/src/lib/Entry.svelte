@@ -5,6 +5,7 @@
 
 	import type { Entry, ImageIcon } from "../types/api";
 	import { rgbToHex } from "../utils/theme-color";
+	import { buildProxyURL } from "../utils/proxy";
 
 	let { data }: { data: Entry } = $props();
 
@@ -147,7 +148,7 @@
 		};
 
 		// Try to find data in cache
-		const url = `/proxy/insecure/rs:fill:64:64/plain${(data.icon as ImageIcon).url}@webp`;
+		const url = buildProxyURL((data.icon as ImageIcon).url, 64);
 
 		if (localStorage.getItem("icon-data") !== null) {
 			const parsed = JSON.parse(localStorage.getItem("icon-data")!);
@@ -280,7 +281,7 @@
 		{#if data.icon.type === "image"}
 			<img
 				class="image"
-				src={`/proxy/insecure/rs:fill:64:64/plain${data.icon.url}@webp`}
+				src={buildProxyURL(data.icon.url, 64)}
 				alt={`${data.name} logo`}
 				draggable="false"
 				style={`width: ${properties.size.scaleFactor}%; height: ${properties.size.scaleFactor}%;`}
