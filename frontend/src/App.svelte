@@ -25,17 +25,21 @@
 	});
 
 	let searchString = $state("");
+	let searchLockedIn = $state(false);
+	let searchOpeningLink = $state(false);
 
 	async function onKeyDown(e: KeyboardEvent) {
 		if (e.key.length === 1) {
-			// Character
+			// Add character to search string
 			searchString += e.key;
 		} else {
 			if (e.key === "Backspace") {
+				// Remove last character
 				if (searchString.length !== 0) {
 					searchString = searchString.slice(0, searchString.length - 1);
 				}
 			} else if (e.key === "Delete") {
+				// Clear search string
 				searchString = "";
 			} else if (e.key === "Enter") {
 				if (searchString.length !== 0) {
@@ -46,6 +50,7 @@
 						);
 						if (found.length === 1) {
 							if (found[0].click.type === "api") {
+								// For api entries -> Send request Todo polish
 								try {
 									await fetch(`${window.api}${found[0].click.endpoint}`, {
 										signal: AbortSignal.timeout(10000),
@@ -55,12 +60,32 @@
 									console.log(_err);
 								}
 							} else {
+								// For links, open them
 								document.location.href = found[0].click.url;
+								searchOpeningLink = true; // Might be used for animations
 							}
 						}
 					}
+				} else {
+					return;
 				}
 			}
+		}
+
+		if (!$entries.isLoading && searchString.length !== 0) {
+			// If the search finds exactly one item, highlight it
+			const found = $entries.entries.filter((entry) =>
+				entry.name.toLowerCase().includes(searchString.toLowerCase())
+			);
+
+			if (found.length === 1) {
+				searchLockedIn = true;
+				return;
+			}
+		}
+
+		if (searchLockedIn === true) {
+			searchLockedIn = false;
 		}
 	}
 </script>
@@ -74,7 +99,7 @@
 >
 	{#if !$entries.isLoading}
 		{#each $entries.entries as entry}
-			<Entry data={entry} {searchString} />
+			<Entry data={entry} {searchString} {searchLockedIn} {searchOpeningLink} />
 		{/each}
 	{/if}
 </main>

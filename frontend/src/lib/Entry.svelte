@@ -6,7 +6,12 @@
 	import type { Entry, ImageIcon } from "../types/api";
 	import { rgbToHex } from "../utils/theme-color";
 
-	let { data, searchString }: { data: Entry; searchString: string } = $props();
+	let {
+		data,
+		searchString,
+		searchLockedIn,
+		searchOpeningLink,
+	}: { data: Entry; searchString: string; searchLockedIn: boolean; searchOpeningLink: boolean } = $props();
 
 	// Consts
 	const MIN_REQUEST_DURATION = 1000;
@@ -22,6 +27,12 @@
 	// API action
 	let loading: boolean = $state(false);
 	let status: string = $state(Status.NONE);
+
+	$effect(() => {
+		if (searchOpeningLink && searchMatch) {
+			loading = true;
+		}
+	});
 
 	let statusClearTimeout: NodeJS.Timeout;
 	let requestStart = 0;
@@ -77,7 +88,7 @@
 			loading = false;
 
 			// TODO: Improve visuals for status
-			//status = res.ok ? Status.OK : Status.ERROR;
+			status = res.ok ? Status.OK : Status.ERROR;
 
 			// Clear status overlay
 			statusClearTimeout = setTimeout(() => {
@@ -265,20 +276,18 @@
 	if (data.icon.type === "image") {
 		extractImageProperties().then((imageProperties) => (properties = imageProperties));
 	}
+
+	let searchMatch = $derived(data.name.toLowerCase().includes(searchString.toLowerCase()));
 </script>
 
-<div
-	class="container"
-	class:searchHide={searchString.length != 0 &&
-		!data.name.toLowerCase().includes(searchString.toLowerCase())}
->
+<div class="container" class:searchHide={searchString.length != 0 && !searchMatch}>
 	<a
 		class="imageContainer"
 		href={data.click.type !== "href" ? "#" : `${data.click.url}`}
 		style={`background: ${data.icon.type === "iconFull" ? data.icon.colors.background : data.icon.type === "iconGradient" ? "linear-gradient(-45deg, " + data.icon.colors.primary + ", " + data.icon.colors.secondary + ")" : properties.backgroundColor}`}
 		onclick={click}
 		class:dimmed={loading || status !== Status.NONE}
-		class:zoomed={loading}
+		class:zoomed={loading || (searchLockedIn && searchMatch)}
 		class:cursor_blocked={loading}
 	>
 		{#if data.icon.type === "image"}
@@ -328,10 +337,11 @@
 		{/if}
 	</a>
 
-	<div class="text">
+	<div class="text" class:textSearchGreen={searchLockedIn && searchMatch}>
 		<p>
 			{@html searchString.length === 0 ||
-			(searchString.length !== 0 && !data.name.toLowerCase().includes(searchString.toLowerCase()))
+			(searchString.length !== 0 && !searchMatch) ||
+			(searchLockedIn && searchMatch)
 				? data.name
 				: data.name
 						.toLowerCase()
@@ -363,6 +373,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.textSearchGreen {
+		background-color: #69ff6987;
+		border-radius: 4px;
 	}
 
 	/* Spinner */
@@ -511,11 +526,12 @@
 
 	/* Text */
 	.text {
-		width: 100%;
+		width: fit-content;
 		display: flex;
 		justify-content: center;
 		position: absolute;
 		top: 60px;
+		max-width: 100%;
 	}
 
 	.text > p {
