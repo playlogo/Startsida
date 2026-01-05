@@ -59,5 +59,5 @@ export async function hash(content: string) {
 	const messageBuffer = new TextEncoder().encode(content);
 	const hashBuffer = await crypto.subtle.digest("SHA-256", messageBuffer);
 
-	return encodeHex(hashBuffer);
+	return encodeHex(hashBuffer) as string;
 }

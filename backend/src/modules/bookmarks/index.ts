@@ -180,7 +180,25 @@ class Group {
 	}
 }
 
-class Bookmark {
+interface BookmarkEntry {
+	type: "group" | "bookmark";
+}
+
+class BookmarkGroup implements BookmarkEntry {
+	type: "group" | "bookmark" = "group";
+
+	name: string;
+
+	entries: BookmarkEntry[] = [];
+
+	constructor(name: string) {
+		this.name = name;
+	}
+}
+
+class Bookmark implements BookmarkEntry {
+	type: "group" | "bookmark" = "bookmark";
+
 	name: string;
 	url: string;
 	hash: string | undefined = undefined;
@@ -199,8 +217,8 @@ class Bookmark {
 		}
 
 		// Add self to manager if not already
-		if (bookmarkManager.bookmarks[this.hash] === undefined) {
-			bookmarkManager.bookmarks[this.hash] = this;
+		if (bookmarkManager.bookmarks[this.hash!] === undefined) {
+			bookmarkManager.bookmarks[this.hash!] = this;
 		}
 
 		// Check if icon loacally cached
@@ -247,8 +265,8 @@ class Bookmark {
 				// Unable to gather icon, store for cron task
 				const array = storage.storage.get("bookmarks/icons/notFound", []) as string[];
 
-				if (!array.includes(this.hash)) {
-					array.push(this.hash);
+				if (!array.includes(this.hash!)) {
+					array.push(this.hash!);
 				}
 
 				await storage.storage.set("bookmarks/icons/notFound", array);
