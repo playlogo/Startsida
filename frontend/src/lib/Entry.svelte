@@ -6,7 +6,7 @@
 	import type { Entry, ImageIcon } from "../types/api";
 	import { rgbToHex } from "../utils/theme-color";
 
-	let { data }: { data: Entry } = $props();
+	let { data, searchString }: { data: Entry; searchString: string } = $props();
 
 	// Consts
 	const MIN_REQUEST_DURATION = 1000;
@@ -267,7 +267,11 @@
 	}
 </script>
 
-<div class="container">
+<div
+	class="container"
+	class:searchHide={searchString.length != 0 &&
+		!data.name.toLowerCase().includes(searchString.toLowerCase())}
+>
 	<a
 		class="imageContainer"
 		href={data.click.type !== "href" ? "#" : `${data.click.url}`}
@@ -325,11 +329,31 @@
 	</a>
 
 	<div class="text">
-		<p>{data.name}</p>
+		<p>
+			{@html searchString.length === 0 ||
+			(searchString.length !== 0 && !data.name.toLowerCase().includes(searchString.toLowerCase()))
+				? data.name
+				: data.name
+						.toLowerCase()
+						.replaceAll(
+							searchString.toLowerCase(),
+							`<span class="searchHighlight">${searchString}</span>`
+						)}
+		</p>
 	</div>
 </div>
 
 <style>
+	/* Searching */
+	.searchHide {
+		opacity: 0.4;
+		transition: opacity 0.2s;
+	}
+
+	:global(.searchHighlight) {
+		background-color: #69ff6987;
+	}
+
 	/* Status overlay */
 	.status {
 		position: absolute;

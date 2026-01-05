@@ -57,4 +57,4 @@ Frontend:
 
 - [ ] User-Tracking via mongoDB
 - [ ] Authentication new clients via one-time token printed to terminal
-- [ ] Search bar via F1 to find bookmarks
+- [x] Search bar via ~~F1 to find bookmarks~~ just typing in the browser tab!

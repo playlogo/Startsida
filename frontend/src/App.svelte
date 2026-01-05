@@ -23,7 +23,26 @@
 			document.querySelector("body")!.style.position = "relative";
 		}
 	});
+
+	let searchString = $state("");
+
+	function onKeyDown(e: KeyboardEvent) {
+		if (e.key.length === 1) {
+			// Character
+			searchString += e.key;
+		} else {
+			if (e.key === "Backspace") {
+				if (searchString.length !== 0) {
+					searchString = searchString.slice(0, searchString.length - 1);
+				}
+			} else if (e.key === "Delete") {
+				searchString = "";
+			}
+		}
+	}
 </script>
+
+<svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <main
 	class:mobile={[DeviceType.Mobile].includes(platform)}
@@ -32,7 +51,7 @@
 >
 	{#if !$entries.isLoading}
 		{#each $entries.entries as entry}
-			<Entry data={entry} />
+			<Entry data={entry} {searchString} />
 		{/each}
 	{/if}
 </main>
@@ -43,6 +62,13 @@
 		<a href={$wallpaper.platform.url}>{$wallpaper.platform.name}</a>
 	</div>
 {/if}
+
+{#if searchString.length !== 0}
+	<div class="top-right-search bottom">
+		<span>{searchString}</span>
+	</div>
+{/if}
+
 {#if !$git.isLoading}
 	<div class="bottom-left bottom" class:bottom-left-mobile={[DeviceType.Mobile].includes(platform)}>
 		{#if $git.error}
@@ -97,6 +123,16 @@
 
 		bottom: 8px;
 		right: 8px;
+	}
+
+	.top-right-search {
+		position: absolute;
+
+		top: 8px;
+		right: 8px;
+
+		background-color: #69ff6987;
+		color: white;
 	}
 
 	.bottom-right {
