@@ -26,7 +26,7 @@
 
 	let searchString = $state("");
 
-	function onKeyDown(e: KeyboardEvent) {
+	async function onKeyDown(e: KeyboardEvent) {
 		if (e.key.length === 1) {
 			// Character
 			searchString += e.key;
@@ -37,6 +37,29 @@
 				}
 			} else if (e.key === "Delete") {
 				searchString = "";
+			} else if (e.key === "Enter") {
+				if (searchString.length !== 0) {
+					// See if we find only one
+					if (!$entries.isLoading) {
+						const found = $entries.entries.filter((entry) =>
+							entry.name.toLowerCase().includes(searchString.toLowerCase())
+						);
+						if (found.length === 1) {
+							if (found[0].click.type === "api") {
+								try {
+									await fetch(`${window.api}${found[0].click.endpoint}`, {
+										signal: AbortSignal.timeout(10000),
+										method: "POST",
+									});
+								} catch (_err) {
+									console.log(_err);
+								}
+							} else {
+								document.location.href = found[0].click.url;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

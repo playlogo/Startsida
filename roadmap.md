@@ -57,4 +57,5 @@ Frontend:
 
 - [ ] User-Tracking via mongoDB
 - [ ] Authentication new clients via one-time token printed to terminal
-- [x] Search bar via ~~F1 to find bookmarks~~ just typing in the browser tab!
+- [x] Search bar via ~~F1 to find bookmarks~~ just typing in the browser tab & enter to goto!
+  - [ ] Possible improvements: Animation when clicking, loading animation for endpoints, signal that there's only one
