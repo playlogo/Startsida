@@ -99,7 +99,9 @@ async function initCache() {
         wallpapers.forEach(element => {
             for (const [_, size] of Object.entries(imageSizes)) {
                 const promise = fetch(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`).then((res) => {
-                    return cache.put(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, res)
+                    if (res.ok) {
+                        return cache.put(`/proxy/insecure/rs:fill:${size}/plain/wallpapers/${element}@webp`, res)
+                    }
                 })
 
                 promises.push(promise)

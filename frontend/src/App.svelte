@@ -88,6 +88,37 @@
 			searchLockedIn = false;
 		}
 	}
+
+	let lastClicks: number[] = [];
+	const MAX_CLICK_BREAK_TIME = 1000; // 1sec
+
+	async function resetHandler(e: MouseEvent) {
+		if (lastClicks.length === 0) {
+			lastClicks.push(Date.now());
+			return;
+		}
+
+		if (lastClicks.length === 1) {
+			if (lastClicks[0] + MAX_CLICK_BREAK_TIME >= Date.now()) {
+				lastClicks.push(Date.now());
+			} else {
+				lastClicks = [Date.now()];
+			}
+			return;
+		}
+
+		if (lastClicks.length === 2) {
+			if (lastClicks[1] + MAX_CLICK_BREAK_TIME >= Date.now()) {
+				// Fire
+				console.log("Deleting service worker");
+				lastClicks = [];
+				await git.invalidate();
+			} else {
+				lastClicks = [Date.now()];
+			}
+			return;
+		}
+	}
 </script>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />
@@ -118,7 +149,13 @@
 {/if}
 
 {#if !$git.isLoading}
-	<div class="bottom-left bottom" class:bottom-left-mobile={[DeviceType.Mobile].includes(platform)}>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div
+		class="bottom-left bottom"
+		class:bottom-left-mobile={[DeviceType.Mobile].includes(platform)}
+		onclick={resetHandler}
+	>
 		{#if $git.error}
 			<span>{$git.error}</span>
 		{:else}

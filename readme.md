@@ -6,7 +6,7 @@ A modern, customizable browser startpage that works offline and synchronizes acr
 
 ## Features
 
-✨ **Core Features**
+**Core Features:**
 
 - **Offline support**: Full functional clients even without an internet connection
 - **Auto-Sync**: Clients automatically update when online
@@ -14,16 +14,16 @@ A modern, customizable browser startpage that works offline and synchronizes acr
 - **Custom Wallpapers**: Simply place them under the `wallpapers` folder and restart the server
 - **Easy deployment**: [Just start one docker container](#tutorial)
 
-🚀 **Advanced features using `modules`**
+**Advanced features using `modules`:**
 
 - **Shortcuts**: Execute shell commands on the server
-- **Wake-on-LAN**: Turn on your PCs remotely
 - **Smart-Home**: Activate scenes from your *bumbleCore* Smarthome (Home-Assistant support coming soon tm)
 
-🕑 **Planed features**
+**Planed features:**
 
 - **Groups**: Organize your bookmarks and more using groups
 - **Authentication**: Simple one-time authentication for  new devices
+- **Wake-on-LAN**: Turn on your PCs remotely - implemented but currently broken
 
 ## Tutorial
 
@@ -55,3 +55,8 @@ Browser Setup:
 - **Firefox**: [How to set the homepage | Mozilla Support](https://support.mozilla.org/en-US/kb/how-to-set-the-home-page)
 - **Chrome/Brave/Opera**: [Choose your homepage | Google Help](https://support.google.com/chrome/answer/95314#:~:text=Choose%20your%20homepage)
 - **iOS Safari**: [Use this awesome extension | Github](https://github.com/infinitepower18/Homepage-MobileSafari)
+
+## Troubleshooting
+
+**Q: Cache seems to be misbehaving or outdated (no wallpaper, etc)**
+**S:** Quickly tap on the git version tag 3 times to force reset the cache and service worker
