@@ -61,6 +61,21 @@ function buildStore() {
 					};
 				}
 
+				// Check if from nasa
+				const nasa_regex = /^(.+)-nasa\.jpg$/;
+				const nasa_match = dailyPaper.match(nasa_regex);
+
+				if (nasa_match) {
+					imageCredit = {
+						creator: "Nasa",
+						link: `https://www.nasa.gov/`,
+						platform: {
+							name: "nasa.gov",
+							url: "https://www.nasa.gov/",
+						},
+					};
+				}
+
 				set({
 					isLoading: false,
 					image: dailyPaper,
@@ -108,7 +123,7 @@ function buildStore() {
 				// Setoff theme color change
 				updateThemeColor(wallpaperUrl);
 			})();
-		}
+		},
 	);
 
 	const store = {
