@@ -74,7 +74,7 @@
 							() => {
 								resolve();
 							},
-							MIN_REQUEST_DURATION - (Date.now() - requestStart)
+							MIN_REQUEST_DURATION - (Date.now() - requestStart),
 						);
 					});
 				}
@@ -250,7 +250,7 @@
 
 		imageProperties.size.scaleFactor = Math.min(
 			Math.max(75 + (IMAGE_SCALE_FACTOR_TARGET - imageProperties.size.scaleFactor) * 80, 60),
-			85
+			85,
 		);
 
 		// If image is not transparent, set background color to color of upper middle pixel
@@ -347,7 +347,7 @@
 						.toLowerCase()
 						.replaceAll(
 							searchString.toLowerCase(),
-							`<span class="searchHighlight">${searchString}</span>`
+							`<span class="searchHighlight">${searchString}</span>`,
 						)}
 		</p>
 	</div>
@@ -545,10 +545,24 @@
 
 		overflow: hidden;
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
+		-webkit-line-clamp: 1;
+		line-clamp: 1;
 		-webkit-box-orient: vertical;
 
 		line-height: 18px;
+	}
+
+	.text > p::before {
+		content: "";
+		box-shadow: 0px 0px 12px 5px #4747475e;
+		width: 102%;
+		position: absolute;
+		height: 0;
+		top: 50%;
+		left: -1%;
+		z-index: -10;
+		overflow: visible;
+		transform: translate(0, -50%);
+		border-radius: 16px;
 	}
 </style>

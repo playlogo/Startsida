@@ -31,22 +31,28 @@
 	async function onKeyDown(e: KeyboardEvent) {
 		if (e.key.length === 1) {
 			// Add character to search string
+			e.preventDefault();
 			searchString += e.key;
 		} else {
 			if (e.key === "Backspace") {
+				e.preventDefault();
+
 				// Remove last character
 				if (searchString.length !== 0) {
 					searchString = searchString.slice(0, searchString.length - 1);
 				}
-			} else if (e.key === "Delete") {
+			} else if (e.key === "Delete" || e.key === "Escape") {
+				e.preventDefault();
 				// Clear search string
 				searchString = "";
 			} else if (e.key === "Enter") {
+				e.preventDefault();
+
 				if (searchString.length !== 0) {
 					// See if we find only one
 					if (!$entries.isLoading) {
 						const found = $entries.entries.filter((entry) =>
-							entry.name.toLowerCase().includes(searchString.toLowerCase())
+							entry.name.toLowerCase().includes(searchString.toLowerCase()),
 						);
 						if (found.length === 1) {
 							if (found[0].click.type === "api") {
@@ -69,13 +75,16 @@
 				} else {
 					return;
 				}
+			} else {
+				// Not a search char, cancel
+				return;
 			}
 		}
 
 		if (!$entries.isLoading && searchString.length !== 0) {
 			// If the search finds exactly one item, highlight it
 			const found = $entries.entries.filter((entry) =>
-				entry.name.toLowerCase().includes(searchString.toLowerCase())
+				entry.name.toLowerCase().includes(searchString.toLowerCase()),
 			);
 
 			if (found.length === 1) {
@@ -121,7 +130,7 @@
 	}
 </script>
 
-<svelte:window on:keydown|preventDefault={onKeyDown} />
+<svelte:window on:keydown={onKeyDown} />
 
 <main
 	class:mobile={[DeviceType.Mobile].includes(platform)}
